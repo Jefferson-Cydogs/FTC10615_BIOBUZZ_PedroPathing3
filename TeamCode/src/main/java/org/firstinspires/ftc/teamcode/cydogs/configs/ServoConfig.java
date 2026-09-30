@@ -11,6 +11,9 @@ import java.util.Map;
 @TeleOp(name = "Servo Config")
 public class ServoConfig extends OpMode {
 
-
+    @Override
+    public void init() {
+        
+    }
 
 }

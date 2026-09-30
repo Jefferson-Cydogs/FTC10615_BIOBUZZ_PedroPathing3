@@ -1,3 +1,6 @@
+package org.firstinspires.ftc.teamcode.cydogs.configs;
+
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,5 +13,9 @@ import java.util.Map;
 @TeleOp(name = "Motor Config")
 public class MotorConfig extends OpMode {
 
+    @Override
+    public void init() {
+
+    }
 
 }
