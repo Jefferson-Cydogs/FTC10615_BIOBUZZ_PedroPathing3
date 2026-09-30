@@ -18,4 +18,20 @@ public class MotorConfig extends OpMode {
 
     }
 
+    @Override
+    public void init_loop() {
+
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void loop() {
+
+
+    }
+
 }
