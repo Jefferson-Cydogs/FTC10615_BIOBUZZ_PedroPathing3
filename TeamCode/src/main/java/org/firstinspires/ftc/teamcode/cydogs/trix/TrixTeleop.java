@@ -122,7 +122,7 @@ public class TrixTeleop extends LinearOpMode {
 
     private void initializeDevices()
     {
-        ledLight = new TrixLED(this, "LedLight");
+
     }
 
     private void initializePositions()
