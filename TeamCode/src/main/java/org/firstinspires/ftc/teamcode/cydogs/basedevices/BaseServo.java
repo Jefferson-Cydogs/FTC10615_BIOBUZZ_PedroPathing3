@@ -64,6 +64,14 @@ public class BaseServo {
         servo.setPosition(currentPosition);
     }
 
+    public void IncrementPosition(double amount) {
+        SetPosition(currentPosition + amount);
+    }
+
+    public void DecrementPosition(double amount) {
+        SetPosition(currentPosition - amount);
+    }
+
     public void UpBigIncrement() {
         SetPosition(currentPosition + BIG_INCREMENT);
     }

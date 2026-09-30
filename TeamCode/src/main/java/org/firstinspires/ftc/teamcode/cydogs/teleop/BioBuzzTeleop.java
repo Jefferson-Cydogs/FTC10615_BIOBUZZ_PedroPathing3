@@ -26,7 +26,7 @@ public class BioBuzzTeleop extends LinearOpMode {
     {
         /** Execute initialization actions here */
         Wheels = new BioBuzzRobotChassis(this);
-        Wheels.InitializeChassisTeleop(.8,.3,.7);
+        Wheels.InitializeChassisTeleop(.6,.3,.5);
         initializeDevices();
         initializePositions();
         currentTimer = new ElapsedTime();
