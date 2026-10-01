@@ -46,7 +46,7 @@ public class BasePowerMotor {
     private void checkInitialized() {
         if (motor == null) {
             throw new IllegalStateException(
-                    "BasePowerMotor "' + hardwareName + '" used before Initialized () was called");
+                    "BasePowerMotor '" + hardwareName + "' used before Initialized () was called");
         }
     }
 
