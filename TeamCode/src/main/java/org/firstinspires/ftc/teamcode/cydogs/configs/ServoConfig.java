@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseServo;
 
 @TeleOp(name = "Servo Config")
 public class ServoConfig extends OpMode {
+
+    /*
+
 
     private static final double TEST_MIN = 0.0;
             private static final double TEST_MAX = 1.0;
@@ -142,6 +146,7 @@ public class ServoConfig extends OpMode {
                     }
 
                 }
-
+*/
+}
 
 

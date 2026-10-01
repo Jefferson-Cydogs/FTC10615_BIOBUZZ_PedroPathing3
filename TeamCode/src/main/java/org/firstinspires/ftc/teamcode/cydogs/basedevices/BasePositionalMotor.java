@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class BasePositionalMotor {
+/*
 
 privite static final int DEFAULT_POSITION_TOLERANCE = 10; // SDK default, in ticks
     privite static final int BIG_INCREMENT = 100;       // ticks
@@ -27,6 +28,8 @@ privite static final int DEFAULT_POSITION_TOLERANCE = 10; // SDK default, in tic
     private double incrementPower = DEAFAULT_INCREMENT_POWER;
 
     /**Positions are in encoder ticks.*/
+
+    /*
     public BasePositionalMotor(OpMode opMode,
                                String hardwareName,
                                DcMotorSimple.Direction direction,
@@ -48,7 +51,7 @@ privite static final int DEFAULT_POSITION_TOLERANCE = 10; // SDK default, in tic
         this.maxPosition = maxPosition;
     }
 
-    /**
+    /*
      * Gets the motor from the hardware map, applies direction, Zero power behavior, and
      position
      *tolerance, and zeroes the encoder. The mechanism should be at its home (min) position
@@ -57,4 +60,7 @@ privite static final int DEFAULT_POSITION_TOLERANCE = 10; // SDK default, in tic
      public void initialize(){
      motor=opMode.hardwareMap.get(DcMotorEx.class, hardwareName);
      motor.setDirection(direction);
+
+     */
+
 }

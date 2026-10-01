@@ -14,6 +14,8 @@ import java.util.Map;
 
 @TeleOp(name = "Motor Config")
 public class MotorConfig extends OpMode {
+
+    /*
     private static final int TEST_MIN=-1_000_000;
     private static final int TEST_MAX=-1_000_000;
     private static final double TEST_POWER= 0.5;
@@ -130,5 +132,5 @@ public class MotorConfig extends OpMode {
 
 
     }
-
+*/
 }
