@@ -10,7 +10,7 @@ public class BasePowerMotor {
     private final DcMotorSimple.Direction direction;
     private final DcMotor.ZeroPowerBehavior zeroPowerBehavior;
 
-    private DcMotor;
+    private DcMotor motor;
 
     public BasePowerMotor(OpMode opMode,
                           String hardwareName,
