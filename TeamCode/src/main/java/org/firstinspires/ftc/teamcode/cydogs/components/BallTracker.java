@@ -18,7 +18,7 @@ public class BallTracker {
     private Alliance alliance;
     private HuskyLens.Block target = null;
 
-    public BallDetector(HardwareMap hardwareMap, String deviceName,
+    public BallTracker(HardwareMap hardwareMap, String deviceName,
                         Alliance alliance, double intervalMs) {
         this.huskyLens = hardwareMap.get(HuskyLens.class, deviceName);
         this.huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
@@ -26,7 +26,7 @@ public class BallTracker {
         this.intervalMs = intervalMs;
     }
 
-    public BallDetector(HardwareMap hardwareMap, String deviceName, Alliance alliance) {
+    public BallTracker(HardwareMap hardwareMap, String deviceName, Alliance alliance) {
         this(hardwareMap, deviceName, alliance, 50);
     }
 
