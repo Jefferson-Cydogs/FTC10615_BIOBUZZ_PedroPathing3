@@ -1,5 +1,5 @@
 
-package org.firstinspires.ftc.teamcode.cydogs.auto;
+package org.firstinspires.ftc.teamcode.cydogs.auton;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
