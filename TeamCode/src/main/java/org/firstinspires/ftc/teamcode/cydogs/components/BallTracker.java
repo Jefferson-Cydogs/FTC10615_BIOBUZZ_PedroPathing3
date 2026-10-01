@@ -11,9 +11,9 @@ public class BallTracker {
     public static final int YELLOW_ID = 1, RED_ID = 2, BLUE_ID = 3;
     public static final int CENTER_X = 160;   // HuskyLens frame is 320x240
 
-    private final HuskyLens huskyLens;
-    private final ElapsedTime timer = new ElapsedTime();
-    private final double intervalMs;
+    private HuskyLens huskyLens;
+    private ElapsedTime timer = new ElapsedTime();
+    private double intervalMs;
 
     private Alliance alliance;
     private HuskyLens.Block target = null;
