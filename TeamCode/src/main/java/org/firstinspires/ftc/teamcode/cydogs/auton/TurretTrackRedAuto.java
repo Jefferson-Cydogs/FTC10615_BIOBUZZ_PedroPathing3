@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 /**
  * Autonomous turret tracking for the red alliance.
  * Only uses targets whose name contains "red" and that look upright
- * (up cell, not the upside-down down cell).
+ * (up tag, not the upside-down down tag).
  * Camera is mounted on the turret. If no target is found, the turret
  * sweeps across its range. When a target is found, the turret moves
  * until the tag is centered left/right in the camera view.
