@@ -90,7 +90,7 @@ public class ServoConfig extends OpMode {
             }
         }
 
-        
+
     @Override
     public void start() {
                 if(selectedServo != null) {
@@ -103,7 +103,7 @@ public class ServoConfig extends OpMode {
 
 
 @Override
- public void init_loop() {
+ public void loop() {
             if (selectedServo == null) {
                 telemetry.addLine("No servo was selected during init!");
                 telemetry.update();
