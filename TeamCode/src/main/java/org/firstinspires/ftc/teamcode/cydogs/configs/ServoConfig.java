@@ -53,44 +53,44 @@ public class ServoConfig extends OpMode {
         if (servoNames.isEmpty()) {
             return;
 
-            boolean dpadUpPressed = gamepad1.dpad_up&& !prevDpadUp;
+            boolean dpadUpPressed = gamepad1.dpad_up && !prevDpadUp;
 
-            boolean dpadDownPressed = gamepad1.dpad_down&& !prevDpadDown;
+            boolean dpadDownPressed = gamepad1.dpad_down && !prevDpadDown;
 
             boolean aPressed = gamepad1.a && !prevA;
 
 
-            if (dpadUpPressed){
-                selectedIndex = (selectedIndex - 1 + servoNames.size()) % servoNames.size ();
+            if (dpadUpPressed) {
+                selectedIndex = (selectedIndex - 1 + servoNames.size()) % servoNames.size();
             }
 
             if (dpadDownPressed) {
                 selectedIndex = (selectedIndex + 1) % servoNames.size();
             }
-            if (aPressed){
+            if (aPressed) {
                 selectionLocked = true;
-                selectedServo = new BaseServo (
-                        this
+                selectedServo = new BaseServo(
+                        this,
                         servoNames.get(selectedIndex),
                         Servo.Direction.FORWARD,
-                        TEST_MIN
-                        TEST_MAX
+                        TEST_MIN,
+                        TEST_MAX,
                         TEST_START);
                 selectedServo.Initialize();
 
 
-                prevDpadUp =gamepad1.dpad_up;
+                prevDpadUp = gamepad1.dpad_up;
                 prevDpadDown = gamepad1.dpad_down;
                 prevA = gamepad1.a;
 
-                telemetry.addLine ("Select a Servo (D-pad Up/Down), then press A:");
-                for (int i = 0; i < servoNames.size(); i++){
-                    String marker = (i == selectedIndex)?">>":" ";
-                    telemetry.addLine(maker + servoNames.get(i));
+                telemetry.addLine("Select a Servo (D-pad Up/Down), then press A:");
+                for (int i = 0; i < servoNames.size(); i++) {
+                    String marker = (i == selectedIndex) ? ">>" : " ";
+                    telemetry.addLine(marker + servoNames.get(i));
                 }
                 telemetry.update();
-    }
-
+            }
+        }
     @Override
     public void start() {
                 if(selectedServo != null) {
@@ -103,7 +103,7 @@ public class ServoConfig extends OpMode {
 
 
 @Override
- public void innit_loop() {
+ public void init_loop() {
             if (selectedServo == null) {
                 telemetry.addLine("No servo was selected during init!");
                 telemetry.update();
