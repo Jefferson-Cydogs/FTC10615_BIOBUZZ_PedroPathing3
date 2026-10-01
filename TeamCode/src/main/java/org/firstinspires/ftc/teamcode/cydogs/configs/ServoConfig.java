@@ -50,7 +50,7 @@ public class ServoConfig extends OpMode {
 
     @Override
     public void init_loop() {
-        if (servoNames.isEmpty() {
+        if (servoNames.isEmpty()) {
             return;
 
             boolean dpadUpPressed = gamepad1.dpad_up&& !prevDpadUp;
@@ -64,7 +64,7 @@ public class ServoConfig extends OpMode {
                 selectedIndex = (selectedIndex - 1 + servoNames.size()) % servoNames.size ();
             }
 
-            If (dpadDownPressed) {
+            if (dpadDownPressed) {
                 selectedIndex = (selectedIndex + 1) % servoNames.size();
             }
             if (aPressed){
@@ -85,7 +85,7 @@ public class ServoConfig extends OpMode {
 
                 telemetry.addLine ("Select a Servo (D-pad Up/Down), then press A:");
                 for (int i = 0; i < servoNames.size(); i++){
-                    String maker + (i == selectedIndex)?">>":"";
+                    String marker = (i == selectedIndex)?">>":" ";
                     telemetry.addLine(maker + servoNames.get(i));
                 }
                 telemetry.update();
