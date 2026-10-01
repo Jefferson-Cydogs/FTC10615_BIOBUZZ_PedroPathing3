@@ -20,7 +20,7 @@ public class ServoConfig extends OpMode {
 
             private final List<String> servoNames = new ArrayList<>();
             private int seletedIndex = 0;
-            Private boolean selectionLocked false;
+            Private boolean selectionLocked =false;
             Private BaseServo selectedServo;
             Private boolean prevDpadUp, pervDpadDown, prevDpadLeft, PervDpadRight, pervA;
 
