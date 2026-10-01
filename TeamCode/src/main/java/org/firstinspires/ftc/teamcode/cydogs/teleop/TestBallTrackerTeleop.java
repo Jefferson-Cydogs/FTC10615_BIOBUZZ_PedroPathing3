@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.cydogs.components.BallDetector;
+import org.firstinspires.ftc.teamcode.cydogs.components.BallTracker;
 
 @TeleOp(name = "Ball Assist TeleOp")
 public class TestBallTrackerTeleop extends LinearOpMode {
@@ -21,13 +21,13 @@ public class TestBallTrackerTeleop extends LinearOpMode {
         DcMotor right = hardwareMap.get(DcMotor.class, "right");
         right.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        BallDetector detector = new BallDetector(
-                hardwareMap, "huskylens", BallDetector.Alliance.BLUE);
+        BallTracker detector = new BallTracker(
+                hardwareMap, "huskylens", BallTracker.Alliance.BLUE);
 
         // Pick alliance during init
         while (!isStarted() && !isStopRequested()) {
-            if (gamepad1.x) detector.setAlliance(BallDetector.Alliance.BLUE);
-            if (gamepad1.b) detector.setAlliance(BallDetector.Alliance.RED);
+            if (gamepad1.x) detector.setAlliance(BallTracker.Alliance.BLUE);
+            if (gamepad1.b) detector.setAlliance(BallTracker.Alliance.RED);
             telemetry.addData("Alliance (X=blue, B=red)", detector.getAlliance());
             telemetry.addData("HuskyLens connected", detector.isConnected());
             telemetry.update();

@@ -4,7 +4,7 @@ import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class BallDetector {
+public class BallTracker {
     public enum Alliance { RED, BLUE }
 
     // IDs match the order you trained the colors on the camera
