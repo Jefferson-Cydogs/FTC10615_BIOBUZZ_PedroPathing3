@@ -13,8 +13,6 @@ public class BaseContinuousServo {
     private CRServo servo;
     private double currentRunningPower = 0;
 
-    // left_intake_servo
-
 
     /** runPower is the speed used by RunForward/RunBackward, from 0 to 1 (sign is ignored). */
     public BaseContinuousServo(OpMode opMode,
