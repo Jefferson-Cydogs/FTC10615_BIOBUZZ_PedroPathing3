@@ -16,28 +16,25 @@ import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseServo;
 public class ServoConfig extends OpMode {
 
 
-
-
     private static final double TEST_MIN = 0.0;
-            private static final double TEST_MAX = 1.0;
-            private static final double TEST_START = 0.5;
+    private static final double TEST_MAX = 1.0;
+    private static final double TEST_START = 0.5;
 
-            private final List<String> servoNames = new ArrayList<>();
-            private int selectedIndex = 0;
-            private boolean selectionLocked =false;
-            private BaseServo selectedServo;
-            private boolean prevDpadUp, prevDpadDown, prevDpadLeft, prevDpadRight, prevA;
+    private final List<String> servoNames = new ArrayList<>();
+    private int selectedIndex = 0;
+    private boolean selectionLocked = false;
+    private BaseServo selectedServo;
+    private boolean prevDpadUp, prevDpadDown, prevDpadLeft, prevDpadRight, prevA;
 
     @Override
     public void init() {
-        for (Map.Entry<String, Servo> entry : hardwareMap.servo.entrySet()){
+        for (Map.Entry<String, Servo> entry : hardwareMap.servo.entrySet()) {
 
-                servoNames.add(entry.getKey());
-            }
+            servoNames.add(entry.getKey());
+        }
 
 
-
-        if (servoNames.isEmpty()){
+        if (servoNames.isEmpty()) {
             telemetry.addLine("No servos found in the robot configuration!");
         } else {
 
@@ -48,11 +45,12 @@ public class ServoConfig extends OpMode {
         }
     }
 
-    @Override
+
+@Override
     public void init_loop() {
         if (servoNames.isEmpty()) {
             return;
-
+        }
             boolean dpadUpPressed = gamepad1.dpad_up && !prevDpadUp;
 
             boolean dpadDownPressed = gamepad1.dpad_down && !prevDpadDown;
@@ -91,6 +89,8 @@ public class ServoConfig extends OpMode {
                 telemetry.update();
             }
         }
+
+        
     @Override
     public void start() {
                 if(selectedServo != null) {
