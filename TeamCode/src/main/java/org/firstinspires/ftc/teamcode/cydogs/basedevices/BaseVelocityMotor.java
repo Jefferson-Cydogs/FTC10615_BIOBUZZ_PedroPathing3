@@ -49,6 +49,7 @@ public class BaseVelocityMotor {
      * The motor controller's built-in PID does the spin-up in the background. Use IsAtVelocity()
      * to check whether it has reached the target.
      */
+    /*
     public void SetVelocity(double ticksPerSecond) {
         checkInitialized();
         targetVelocity = ticksPerSecond;
