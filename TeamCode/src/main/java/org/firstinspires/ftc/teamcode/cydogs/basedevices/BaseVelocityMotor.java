@@ -61,6 +61,7 @@ public class BaseVelocityMotor {
      * True if a velocity target is active and the measured velocity is within the tolerance
      * (ticks/sec) of it
      */
+    /*
     public boolean IsAtVelocity() {
         checkInitialized();
         return velocityTargetActive
@@ -70,6 +71,7 @@ public class BaseVelocityMotor {
     /**
      * Same as above, using a default tolerance of 5% of the target velocity.
      */
+    /*
     public boolean IsAtVelocity() {
         return IsAtVelocity(Math.abs(targetVelocity) *
                 DEFAULT_VELOCITY_TOLERANCE_PERCENT);
