@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.cydogs.auton;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.cydogs.turret.Turret;
+import org.firstinspires.ftc.teamcode.cydogs.components.Turret;
 import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 
 /**

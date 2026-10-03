@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.cydogs.turret;
+package org.firstinspires.ftc.teamcode.cydogs.components;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
