@@ -61,7 +61,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         TrixWheels = new BioBuzzRobotChassis(this);
         TrixWheels.InitializeChassisTeleop(.6,.3,.5);
 
-        initializeWheels();
+
         initializeDevices();
         initializePositions();
 
