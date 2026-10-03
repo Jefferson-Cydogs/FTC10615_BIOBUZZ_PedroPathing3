@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseContinuousServo;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BasePowerMotor;
 import org.firstinspires.ftc.teamcode.cydogs.chassis.BioBuzzRobotChassis;
