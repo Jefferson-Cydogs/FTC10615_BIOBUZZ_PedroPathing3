@@ -120,7 +120,7 @@ public class ServoConfig extends OpMode {
 
             }
             if (dpadDownPressed) {
-                selectedServo.UpBigIncrement();
+                selectedServo.DownBigIncrement();
 
             }
             if (dpadRightPressed) {

@@ -350,4 +350,21 @@ public class BioBuzzRobotChassis {
         BackRightWheel.setPower(0);
     }
 
+    // this function added to work with husky lens for ball tracking but can be used for other command driven movement.
+    public void DriveRobotCentric(double forward, double strafe, double rotate)
+    {
+        double fl = forward + strafe + rotate;
+        double fr = forward - strafe - rotate;
+        double bl = forward - strafe + rotate;
+        double br = forward + strafe - rotate;
+
+        double maxPower = max(max(abs(fl), abs(fr)), max(abs(bl), abs(br)));
+        if (maxPower > 1.0) { fl /= maxPower; fr /= maxPower; bl /= maxPower; br /= maxPower; }
+
+        FrontLeftWheel.setPower(fl);
+        FrontRightWheel.setPower(fr);
+        BackLeftWheel.setPower(bl);
+        BackRightWheel.setPower(br);
+    }
+
 }

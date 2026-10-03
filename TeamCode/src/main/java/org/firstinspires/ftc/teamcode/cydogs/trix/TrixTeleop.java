@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseContinuousServo;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BasePowerMotor;
 import org.firstinspires.ftc.teamcode.cydogs.chassis.BioBuzzRobotChassis;
+import org.firstinspires.ftc.teamcode.cydogs.components.BallTracker;
 import org.firstinspires.ftc.teamcode.cydogs.components.DumpArm;
 
 
@@ -53,6 +54,14 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
     private DumpArm flowerArm;
 
+
+    // Ball tracker properties
+    private BallTracker ballTracker;
+    static final double KP_TURN = 0.004;
+    static final double ASSIST_DRIVE_POWER = 0.4;
+    static final double MAX_ASSIST_TURN = 0.4;
+    static final int STOP_WIDTH = 120;
+
     @Override
     public void runOpMode() {
 
@@ -65,19 +74,41 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         initializeDevices();
         initializePositions();
 
-        waitForStart();
+
+
+        while (!isStarted() && !isStopRequested()) {
+            if (gamepad1.square) ballTracker.setAlliance(BallTracker.Alliance.BLUE);
+            if (gamepad1.circle) ballTracker.setAlliance(BallTracker.Alliance.RED);
+            telemetry.addData("Alliance (Square=blue, Circle=red)", ballTracker.getAlliance());
+            telemetry.addData("HuskyLens connected", ballTracker.isConnected());
+            telemetry.update();
+        }
+
         while (opModeIsActive()) {
-            // Execute OpMode actions here
-            TrixWheels.OptimizedTeleopDrive();
             manageDriverControls();
             manageManipulatorControls();
-
         }
+
     }
 
     private void manageDriverControls()
     {
+        boolean assist = gamepad1.dpad_up;
+        if (assist) {
+            ballTracker.update();          // only read the camera while assisting
+        }
 
+        if (assist && ballTracker.hasTarget()) {
+            if (ballTracker.isWithin(STOP_WIDTH)) {
+                TrixWheels.stopMotors();
+            } else {
+                double turn = Range.clip(ballTracker.getXError() * KP_TURN,
+                        -MAX_ASSIST_TURN, MAX_ASSIST_TURN);
+                TrixWheels.DriveRobotCentric(ASSIST_DRIVE_POWER, 0, turn);
+            }
+        } else {
+            TrixWheels.OptimizedTeleopDrive();
+        }
     }
 
     private void manageManipulatorControls()
@@ -122,11 +153,11 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         {
             feeder.Stop();
         }
-        if(gamepad2.dpad_up)
+        if(gamepad2.dpadUpWasPressed())
         {
             flowerArm.MoveToDump();
         }
-        if(gamepad2.dpad_down)
+        if(gamepad2.dpadDownWasPressed())
         {
             flowerArm.MoveToRest();
         }
@@ -160,7 +191,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
     private void initializePositions()
     {
-
+        flowerArm.SnapToRest();
     }
 
 
