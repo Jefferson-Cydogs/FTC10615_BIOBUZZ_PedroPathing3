@@ -189,6 +189,9 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
         flowerArm = new DumpArm(this);
         flowerArm.Initialize();
+
+        ballTracker = new BallTracker(hardwareMap, "huskylens", BallTracker.Alliance.BLUE);
+
     }
 
     private void initializePositions()
