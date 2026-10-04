@@ -34,9 +34,9 @@ import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseServo;
 public class DumpArm {
 
     // ---- Hardware names (must match the robot configuration) ----
-    private static final String LOWER_NAME  = "lower_flower_servo";
-    private static final String MEDIUM_NAME = "medium_flower_servo";
-    private static final String UPPER_NAME  = "upper_flower_servo";
+    private static final String LOWER_NAME  = "lowerflower";
+    private static final String MEDIUM_NAME = "midflower";
+    private static final String UPPER_NAME  = "upperflower";
 
     // ---- Per-servo direction ----
     // If a joint unfolds the wrong way, switch it to REVERSE. Note that with REVERSE the angle
@@ -60,7 +60,7 @@ public class DumpArm {
     // ---- Joint angles in degrees: {Lower, Medium, Upper} ----
     // Estimated from the sketch. Real values depend on how the servo horns are mounted, so expect to tune.
     private static final double[] REST_ANGLES = {0, 10, 10};
-    private static final double[] DUMP_ANGLES = {50, 88, 28};
+    private static final double[] DUMP_ANGLES = {80, 110, 30};
 
     // ---- Movement time (seconds for a full move). Increase for a slower, gentler move. ----
     private static final double RAISE_SECONDS = 1.5;

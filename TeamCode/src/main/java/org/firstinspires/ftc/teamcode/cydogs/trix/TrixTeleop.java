@@ -58,7 +58,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
 
     // Ball tracker properties
-    private BallTracker ballTracker;
+  //  private BallTracker ballTracker;
     static final double KP_TURN = 0.004;
     static final double ASSIST_DRIVE_POWER = 0.4;
     static final double MAX_ASSIST_TURN = 0.4;
@@ -78,13 +78,13 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
 
 
-        while (!isStarted() && !isStopRequested()) {
+    /*    while (!isStarted() && !isStopRequested()) {
             if (gamepad1.square) ballTracker.setAlliance(BallTracker.Alliance.BLUE);
             if (gamepad1.circle) ballTracker.setAlliance(BallTracker.Alliance.RED);
             telemetry.addData("Alliance (Square=blue, Circle=red)", ballTracker.getAlliance());
             telemetry.addData("HuskyLens connected", ballTracker.isConnected());
             telemetry.update();
-        }
+        }*/
 
         while (opModeIsActive()) {
             manageDriverControls();
@@ -95,22 +95,22 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
     private void manageDriverControls()
     {
-        boolean assist = gamepad1.dpad_up;
-        if (assist) {
-            ballTracker.update();          // only read the camera while assisting
-        }
+     //   boolean assist = gamepad1.dpad_up;
+     //   if (assist) {
+         //   ballTracker.update();          // only read the camera while assisting
+     //   }
 
-        if (assist && ballTracker.hasTarget()) {
-            if (ballTracker.isWithin(STOP_WIDTH)) {
-                TrixWheels.stopMotors();
-            } else {
-                double turn = Range.clip(ballTracker.getXError() * KP_TURN,
-                        -MAX_ASSIST_TURN, MAX_ASSIST_TURN);
-                TrixWheels.DriveRobotCentric(ASSIST_DRIVE_POWER, 0, turn);
-            }
-        } else {
+     //   if (assist && ballTracker.hasTarget()) {
+     //       if (ballTracker.isWithin(STOP_WIDTH)) {
+     //           TrixWheels.stopMotors();
+     //       } else {
+     //           double turn = Range.clip(ballTracker.getXError() * KP_TURN,
+     //                   -MAX_ASSIST_TURN, MAX_ASSIST_TURN);
+     //           TrixWheels.DriveRobotCentric(ASSIST_DRIVE_POWER, 0, turn);
+     //       }
+     //   } else {
             TrixWheels.OptimizedTeleopDrive();
-        }
+     //   }
     }
 
     private void manageManipulatorControls()
@@ -190,7 +190,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         flowerArm = new DumpArm(this);
         flowerArm.Initialize();
 
-        ballTracker = new BallTracker(hardwareMap, "huskylens", BallTracker.Alliance.BLUE);
+      //  ballTracker = new BallTracker(hardwareMap, "huskylens", BallTracker.Alliance.BLUE);
 
     }
 

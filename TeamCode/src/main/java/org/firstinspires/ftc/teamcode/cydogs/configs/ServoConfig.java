@@ -46,22 +46,25 @@ public class ServoConfig extends OpMode {
     }
 
 
-@Override
+    @Override
     public void init_loop() {
         if (servoNames.isEmpty()) {
             return;
         }
-            boolean dpadUpPressed = gamepad1.dpad_up && !prevDpadUp;
 
-            boolean dpadDownPressed = gamepad1.dpad_down && !prevDpadDown;
+        boolean dpadUpPressed = gamepad1.dpad_up && !prevDpadUp;
+        boolean dpadDownPressed = gamepad1.dpad_down && !prevDpadDown;
+        boolean aPressed = gamepad1.a && !prevA;
 
-            boolean aPressed = gamepad1.a && !prevA;
+        // Keep these current every loop so each press counts once
+        prevDpadUp = gamepad1.dpad_up;
+        prevDpadDown = gamepad1.dpad_down;
+        prevA = gamepad1.a;
 
-
+        if (!selectionLocked) {
             if (dpadUpPressed) {
                 selectedIndex = (selectedIndex - 1 + servoNames.size()) % servoNames.size();
             }
-
             if (dpadDownPressed) {
                 selectedIndex = (selectedIndex + 1) % servoNames.size();
             }
@@ -75,20 +78,21 @@ public class ServoConfig extends OpMode {
                         TEST_MAX,
                         TEST_START);
                 selectedServo.Initialize();
-
-
-                prevDpadUp = gamepad1.dpad_up;
-                prevDpadDown = gamepad1.dpad_down;
-                prevA = gamepad1.a;
-
-                telemetry.addLine("Select a Servo (D-pad Up/Down), then press A:");
-                for (int i = 0; i < servoNames.size(); i++) {
-                    String marker = (i == selectedIndex) ? ">>" : " ";
-                    telemetry.addLine(marker + servoNames.get(i));
-                }
-                telemetry.update();
             }
         }
+
+        if (selectionLocked) {
+            telemetry.addLine("Locked on: " + servoNames.get(selectedIndex));
+            telemetry.addLine("Press START to begin tuning.");
+        } else {
+            telemetry.addLine("Select a servo (D-pad Up/Down), then press A:");
+            for (int i = 0; i < servoNames.size(); i++) {
+                String marker = (i == selectedIndex) ? ">> " : "    ";
+                telemetry.addLine(marker + servoNames.get(i));
+            }
+        }
+        telemetry.update();
+    }
 
 
     @Override
@@ -138,7 +142,7 @@ public class ServoConfig extends OpMode {
 
             telemetry.addData("Controlling servo", servoNames.get(selectedIndex));
             telemetry.addData("Position", "%.3f", selectedServo.GetPosition());
-            telemetry.addLine("Up/Down = +-0.1 Left/Right +-0.1");
+            telemetry.addLine("Up/Down = +-0.1 Left/Right +-0.01");
             telemetry.update();
 
         }
