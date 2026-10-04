@@ -86,6 +86,8 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
             telemetry.update();
         }*/
 
+        waitForStart();
+
         while (opModeIsActive()) {
             manageDriverControls();
             manageManipulatorControls();
@@ -124,7 +126,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
         if(gamepad2.triangle)
         {
-            launcher.SetPower(.4);
+            launcher.SetPower(.45);
         }
         else if (gamepad2.cross)
         {
@@ -134,7 +136,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         {
             intake.SetPower(.6);
             rightloader.RunForward();
-            leftloader.RunForward();
+            leftloader.RunBackward();
         }
         else if (gamepad2.left_trigger > .4)
         {
@@ -149,13 +151,13 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         }
         if(gamepad2.right_bumper)
         {
-            feeder.RunForward();
+            feeder.RunBackward();
         }
         else
         {
             feeder.Stop();
         }
-        if(gamepad2.dpadUpWasPressed())
+  /*      if(gamepad2.dpadUpWasPressed())
         {
             flowerArm.MoveToDump();
         }
@@ -164,7 +166,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
             flowerArm.MoveToRest();
         }
 
-        flowerArm.Update();
+        flowerArm.Update();*/
 
     }
 
@@ -187,8 +189,8 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         intake = new BasePowerMotor(this, "intake", DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.FLOAT);
         intake.Initialize();
 
-        flowerArm = new DumpArm(this);
-        flowerArm.Initialize();
+    //    flowerArm = new DumpArm(this);
+     //   flowerArm.Initialize();
 
       //  ballTracker = new BallTracker(hardwareMap, "huskylens", BallTracker.Alliance.BLUE);
 
@@ -196,7 +198,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
     private void initializePositions()
     {
-        flowerArm.SnapToRest();
+    //    flowerArm.SnapToRest();
     }
 
 

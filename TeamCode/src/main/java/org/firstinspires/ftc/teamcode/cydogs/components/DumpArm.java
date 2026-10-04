@@ -59,7 +59,7 @@ public class DumpArm {
 
     // ---- Joint angles in degrees: {Lower, Medium, Upper} ----
     // Estimated from the sketch. Real values depend on how the servo horns are mounted, so expect to tune.
-    private static final double[] REST_ANGLES = {0, 10, 10};
+    private static final double[] REST_ANGLES = {0, 35, 10};
     private static final double[] DUMP_ANGLES = {80, 110, 30};
 
     // ---- Movement time (seconds for a full move). Increase for a slower, gentler move. ----
