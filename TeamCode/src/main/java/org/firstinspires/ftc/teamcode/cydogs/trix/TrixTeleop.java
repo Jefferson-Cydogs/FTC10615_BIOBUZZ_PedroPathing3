@@ -49,6 +49,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
     private BaseContinuousServo rightloader;
 
     private BasePowerMotor launcher;
+    private double launcherPower = 0.48;
 
     private BasePowerMotor intake;
 
@@ -70,8 +71,8 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         // Execute initialization actions here
 
         TrixWheels = new BioBuzzRobotChassis(this);
-        TrixWheels.InitializeChassisTeleop(.6,.3,.5);
-
+        TrixWheels.InitializeChassisTeleop(.75,.3,.5);
+        TrixWheels.FrontLeftWheel.setDirection(DcMotor.Direction.FORWARD);
 
         initializeDevices();
         initializePositions();
@@ -126,7 +127,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
         if(gamepad2.triangle)
         {
-            launcher.SetPower(.45);
+            launcher.SetPower(launcherPower);
         }
         else if (gamepad2.cross)
         {
@@ -134,7 +135,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         }
         if (gamepad2.right_trigger > .4)
         {
-            intake.SetPower(.6);
+            intake.SetPower(.7);
             rightloader.RunForward();
             leftloader.RunBackward();
         }
@@ -150,6 +151,10 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
             leftloader.Stop();
         }
         if(gamepad2.right_bumper)
+        {
+            feeder.RunForward();
+        }
+        else if(gamepad2.left_bumper)
         {
             feeder.RunBackward();
         }
@@ -174,13 +179,13 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
     private void initializeDevices()
     {
-        leftloader = new BaseContinuousServo(this,"left_intake_servo", DcMotorSimple.Direction.FORWARD,0.7);
+        leftloader = new BaseContinuousServo(this,"left_intake_servo", DcMotorSimple.Direction.FORWARD,0.8);
         leftloader.Initialize();
 
-        rightloader = new BaseContinuousServo(this,"right_intake_servo", DcMotorSimple.Direction.FORWARD, 0.7);
+        rightloader = new BaseContinuousServo(this,"right_intake_servo", DcMotorSimple.Direction.FORWARD, 0.8);
         rightloader.Initialize();
 
-        feeder = new BaseContinuousServo(this,"windmillServo", DcMotorSimple.Direction.FORWARD, 0.5);
+        feeder = new BaseContinuousServo(this,"windmillServo", DcMotorSimple.Direction.REVERSE, 0.6);
         feeder.Initialize();
 
         launcher = new BasePowerMotor(this, "launcher", DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.FLOAT);
