@@ -23,7 +23,7 @@ public class MotorConfig extends OpMode {
     private int selectedIndex=0;
     private boolean selectionLocked = false;
     private BasePositionMotor selectedMotor;
-    private boolean prevDpadup, prevDpadDown, prevDpadLeft, prevDpadRight,prevA,prevB,prevX;
+    private boolean prevdpad, prevDpadDown, prevDpadLeft, prevDpadRight,prevA,prevB,prevX;
     @Override
     public void init() {
     for (Map.Entry<String,DcMotor>entry:hardwareMap.dcMotor.entrySet())
@@ -35,7 +35,7 @@ public class MotorConfig extends OpMode {
         }else {
             telemetry.addLine("Found"+motorNames.size()+"motor(s).");
         }
-        telemetry.addLine("D-Pad Up/Down to select,A to confrim.");
+        telemetry.addLine("D-Pad Up/Down to select,A to confirm.");
         telemetry.update();
     }
 
@@ -44,7 +44,7 @@ public class MotorConfig extends OpMode {
          if (motorNames.isEmpty()||selectionLocked){
              return;
             }
-        boolean dpadUpPressed=gamepad1.dpad_up&&!prevDpadup;
+        boolean dpadUpPressed=gamepad1.dpad_up&&!prevdpad;
          boolean dpadDownPressed=gamepad1.dpad_down&&!prevDpadDown;
          boolean aPressed=gamepad1.a&&!prevA;
 
@@ -66,7 +66,7 @@ public class MotorConfig extends OpMode {
              selectedMotor.SetIncrementPower(TEST_POWER);
              selectedMotor.Initalize();
          }
-         prevDpadup=gamepad1.dpad_up;
+         prevdpad=gamepad1.dpad_up;
          prevDpadDown=gamepad1.dpad_down;
          prevA=gamepad1.a;
 
@@ -88,7 +88,7 @@ public class MotorConfig extends OpMode {
             telemetry.update();
             return;
         }
-        boolean dpadUpPressed=gamepad1.dpad_up&&!prevDpadup;
+        boolean dpadUpPressed=gamepad1.dpad_up&&!prevdpad;
         boolean dpadDownPressed=gamepad1.dpad_down&&!prevDpadDown;
         boolean dpadRightPressed=gamepad1.dpad_right&&!prevDpadRight;
         boolean dpadLeftPressed=gamepad1.dpad_left&&!prevDpadLeft;
