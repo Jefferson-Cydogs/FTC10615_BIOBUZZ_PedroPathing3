@@ -30,7 +30,9 @@ public class BaseVelocityMotor {
         this.zeroPowerBehavior = zeroPowerBehavior;
     }
 
-    /** Gets the motor from the hardware map and prepares it for velocity control. */
+    /**
+     * Gets the motor from the hardware map and prepares it for velocity control.
+     */
     public void Initialize() {
         motor = opMode.hardwareMap.get(DcMotorEx.class, hardwareName);
         motor.setDirection(direction);
@@ -53,64 +55,68 @@ public class BaseVelocityMotor {
         motor.setVelocity(ticksPerSecond);
     }
 
-    /** True if a velocity target is active and the measured velocity is within the tolerance (ticks/sec) of it. */
+    /**
+     * True if a velocity target is active and the measured velocity is within the tolerance (ticks/sec) of it.
+     */
     public boolean IsAtVelocity(double toleranceTicksPerSecond) {
         checkInitialized();
         return velocityTargetActive
                 && Math.abs(motor.getVelocity() - targetVelocity) <= toleranceTicksPerSecond;
     }
 
-    /** Same as above, using a default tolerance of 5% of the target velocity. */
+    /**
+     * Same as above, using a default tolerance of 5% of the target velocity.
+     */
     public boolean IsAtVelocity() {
         return IsAtVelocity(Math.abs(targetVelocity) * DEFAULT_VELOCITY_TOLERANCE_PERCENT);
     }
 
-/**
- * Blocking version: sets the velocity, then waits until it is reached or the timeout expires.
- * Requires the motor to have been created with a LinearOpMode. Returns true if the velocity
- * was reached, false on timeout or if the OpMode was stopped.
- */
-public boolean SetVelocityAndWait(double ticksPerSecond, double toleranceTicksPerSecond,
-                                  double timeoutMS){
-    if (!(opMode instanceof LinearOpMode)){
-        throw new IllegalStateException(
-                "BaseVelocityMotor'" + hardwareName + "': SetVelocityAndWait requires a LinearOpMode");
-    }
-    LinearOpMode linearOpMode = (LinearOpMode) opMode;
-
-    SetVelocity(ticksPerSecond);
-
-    ElapsedTime timer = new ElapsedTime();
-    while (linearOpMode.opModeIsActive() && timer.milliseconds() < timeoutMS) {
-
-        if (IsAtVelocity(toleranceTicksPerSecond)) {
-            return true;
+    /**
+     * Blocking version: sets the velocity, then waits until it is reached or the timeout expires.
+     * Requires the motor to have been created with a LinearOpMode. Returns true if the velocity
+     * was reached, false on timeout or if the OpMode was stopped.
+     */
+    public boolean SetVelocityAndWait(double ticksPerSecond, double toleranceTicksPerSecond,
+                                      double timeoutMS) {
+        if (!(opMode instanceof LinearOpMode)) {
+            throw new IllegalStateException(
+                    "BaseVelocityMotor'" + hardwareName + "': SetVelocityAndWait requires a LinearOpMode");
         }
-        linearOpMode.idle();
+        LinearOpMode linearOpMode = (LinearOpMode) opMode;
+
+        SetVelocity(ticksPerSecond);
+
+        ElapsedTime timer = new ElapsedTime();
+        while (linearOpMode.opModeIsActive() && timer.milliseconds() < timeoutMS) {
+
+            if (IsAtVelocity(toleranceTicksPerSecond)) {
+                return true;
+            }
+            linearOpMode.idle();
+        }
+        return false;
     }
-    return false;
-}
 
-public void Stop() {
-    checkInitialized();
-    velocityTargetActive = false;
-    targetVelocity = 0;
-    motor.setPower(0);
-}
+    public void Stop() {
+        checkInitialized();
+        velocityTargetActive = false;
+        targetVelocity = 0;
+        motor.setPower(0);
+    }
 
-public double GetVelocity() {
-    checkInitialized();
-    return motor.getVelocity();
-}
+    public double GetVelocity() {
+        checkInitialized();
+        return motor.getVelocity();
+    }
 
-public double GetTargetVelocity() {
-    return targetVelocity;
-}
+    public double GetTargetVelocity() {
+        return targetVelocity;
+    }
 
-private void checkInitialized() {
-    if (motor == null) {
-        throw new IllegalStateException(
-                "BaseVelocityMotor '" + hardwareName + "' used before Initialized() was called");
+    private void checkInitialized() {
+        if (motor == null) {
+            throw new IllegalStateException(
+                    "BaseVelocityMotor '" + hardwareName + "' used before Initialized() was called");
         }
     }
 }

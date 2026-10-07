@@ -58,7 +58,7 @@ public class BasePositionalMotor {
      * tolerance, and zeroes the encoder. The mechanism should be at its home (min) position
      * when it turns
      */
-    public void initialize() {
+    public void Initialize() {
         motor = opMode.hardwareMap.get(DcMotorEx.class, hardwareName);
         motor.setDirection(direction);
         motor.setDirection(direction);
