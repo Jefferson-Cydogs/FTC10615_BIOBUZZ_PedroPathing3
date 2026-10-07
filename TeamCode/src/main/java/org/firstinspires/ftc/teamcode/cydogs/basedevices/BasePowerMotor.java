@@ -26,6 +26,7 @@ public class BasePowerMotor {
         motor = opMode.hardwareMap.get(DcMotor.class, hardwareName);
         motor.setZeroPowerBehavior(zeroPowerBehavior);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor.setDirection(direction);
         motor.setPower(0);
     }
 
