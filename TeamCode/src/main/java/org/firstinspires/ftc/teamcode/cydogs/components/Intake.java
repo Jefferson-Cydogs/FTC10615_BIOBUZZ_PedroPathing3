@@ -4,7 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.onbotjava.handlers.file.TemplateFile;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseContinuousServo;
+import org.firstinspires.ftc.teamcode.cydogs.basedevices.BasePositionalMotor;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BasePowerMotor;
 
 /**
@@ -48,6 +51,7 @@ import org.firstinspires.ftc.teamcode.cydogs.basedevices.BasePowerMotor;
  * one.
  */
 public class Intake {
+
 
     // =========================================================================================
     // STEP 1: THE SETTINGS (constants)
@@ -94,8 +98,16 @@ public class Intake {
     //
     // We will tune these numbers later by testing on the robot.
     //
-    // (Write your ten constants below this line.)
-
+    private final String LEFT_SERVO_NAME= "LeftIntakeServo";
+    private final String RIGHT_SERVO_NAME= "RightIntakeServo";
+    private final String MOTOR_NAME= "Intake";
+    private final DcMotorSimple.Direction LEFT_SERVO_DIRECTION = DcMotorSimple.Direction.REVERSE;
+    private final DcMotorSimple.Direction RIGHT_SERVO_DIRECTION = DcMotorSimple.Direction.FORWARD;
+    private final DcMotorSimple.Direction MOTOR_DIRECTION = DcMotorSimple.Direction.REVERSE;
+    private final DcMotor.ZeroPowerBehavior MOTOR_ZERO_POWER_BEHAVIOR = DcMotor.ZeroPowerBehavior.FLOAT;
+    private final double SERVO_POWER = 0.7;
+    private final double MOTOR_INTAKE_POWER = 0.6;
+    private final double MOTOR_REVERSE_POWER = -0.4;
 
     // =========================================================================================
     // STEP 2: THE PROPERTIES (the three parts)
@@ -117,7 +129,9 @@ public class Intake {
     // do. That is Java protecting you from forgetting.
     //
     // (Write your three properties below this line.)
-
+    private final BaseContinuousServo leftServo;
+    private final BaseContinuousServo rightServo;
+    private final BasePowerMotor rollerMotor;
 
     // =========================================================================================
     // STEP 3: THE CONSTRUCTOR
@@ -148,7 +162,11 @@ public class Intake {
     // Do NOT call Initialize on the parts here; that happens in Step 4.
     //
     // (Write your constructor below this line.)
-
+    public Intake(OpMode opMode){
+         leftServo = new BaseContinuousServo (opMode,LEFT_SERVO_NAME,LEFT_SERVO_DIRECTION,SERVO_POWER);
+        rightServo = new BaseContinuousServo (opMode,RIGHT_SERVO_NAME,RIGHT_SERVO_DIRECTION,SERVO_POWER);
+        rollerMotor = new BasePowerMotor (opMode,MOTOR_NAME,MOTOR_DIRECTION,MOTOR_ZERO_POWER_BEHAVIOR);
+    }
 
     // =========================================================================================
     // STEP 4: THE Initialize METHOD
@@ -170,7 +188,12 @@ public class Intake {
     // with a message saying it was used before Initialize was called.
     //
     // (Write your Initialize method below this line.)
+    public void Initialize(){
+       leftServo.Initialize();
+       rightServo.Initialize();
+       rollerMotor.Initialize();
 
+    }
 
     // =========================================================================================
     // STEP 5: THE RunIntake METHOD
@@ -196,7 +219,11 @@ public class Intake {
     // Add a comment above the method in your own words saying what it does.
     //
     // (Write your RunIntake method below this line.)
-
+    public void RunIntake(){
+       leftServo.RunForward();
+       rightServo.RunForward();
+       rollerMotor.SetPower(MOTOR_INTAKE_POWER);
+    }
 
     // =========================================================================================
     // STEP 6: THE ReverseIntake AND StopIntake METHODS
@@ -216,8 +243,17 @@ public class Intake {
     // Add a comment above each method in your own words.
     //
     // (Write your ReverseIntake and StopIntake methods below this line.)
+    public void ReverseIntake (){
+        leftServo.Stop();
+        rightServo.Stop();
+        rollerMotor.SetPower(MOTOR_REVERSE_POWER);
+    }
 
-
+    public void StopIntake(){
+        leftServo.Stop();
+        rightServo.Stop();
+        rollerMotor.Stop();
+    }
     // =========================================================================================
     // CHECK YOUR WORK
     // =========================================================================================
@@ -248,5 +284,9 @@ public class Intake {
     //   Add a method called RunRollerOnly that runs ONLY the main roller inward and keeps both
     //   side rotators stopped. It is a mix of the lines you already wrote in RunIntake and
     //   ReverseIntake.
-
+    public void RunRollerOnly(){
+        rightServo.Stop();
+        leftServo.Stop();
+        rollerMotor.SetPower(MOTOR_INTAKE_POWER);
+    }
 }
