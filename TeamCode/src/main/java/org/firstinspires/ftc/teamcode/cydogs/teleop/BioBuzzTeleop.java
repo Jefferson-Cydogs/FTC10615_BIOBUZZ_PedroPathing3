@@ -27,7 +27,8 @@ public class BioBuzzTeleop extends LinearOpMode {
     {
         /** Execute initialization actions here */
         Wheels = new BioBuzzRobotChassis(this);
-        Wheels.InitializeChassisTeleop(.6,.3,.5);
+
+
         initializeDevices();
         initializePositions();
         currentTimer = new ElapsedTime();
@@ -35,20 +36,19 @@ public class BioBuzzTeleop extends LinearOpMode {
         eventTracker = new EventTracker();
 
         waitForStart();
-        //tagReader.initAprilTag();
+
         matchTimer.reset();
 
         while (opModeIsActive()) {
             /** Execute OpMode actions here */
             Wheels.OptimizedTeleopDrive();
-
-            //tagReader.displayDetections(tagReader.GetDetections());
             manageDriverControls();
             manageManipulatorControls();
 
 
 
             if (eventTracker.doEvent("Telemetry",currentTimer.seconds(),0.5)) {
+                // add code to write out current velocity percent of launcher
 
                 telemetry.update();
             }
@@ -69,13 +69,13 @@ public class BioBuzzTeleop extends LinearOpMode {
     {
         if(gamepad1.dpadUpWasPressed())
         {
-            // increase launcher velocity by adjustLauncherPowerIncrement
-            // write out to telemetry the new launcher velocity
+            // increase launcher velocity the built in increment
+
         }
         else if(gamepad1.dpadDownWasPressed())
         {
-            // decrease launcher velocity by adjustLauncherPowerIncrement
-            // write out to telemetry the new launcher velocity
+            // decrease launcher velocity by the built in decrement
+
         }
     }
 
@@ -100,12 +100,12 @@ public class BioBuzzTeleop extends LinearOpMode {
         }
         else if(gamepad2.crossWasPressed())
         {
-            // turn launcher ff
+            // turn launcher off
         }
 
-        if(gamepad2.right_bumper)
+        if(gamepad2.rightBumperWasPressed())
         {
-            // run feeder
+            // move scoring element to launcher
         }
 
         if(gamepad2.dpadUpWasPressed())
@@ -130,6 +130,7 @@ public class BioBuzzTeleop extends LinearOpMode {
 
     private void initializeDevices()
     {
+        Wheels.InitializeChassisTeleop(.6,.3,.5);
 
     }
 
