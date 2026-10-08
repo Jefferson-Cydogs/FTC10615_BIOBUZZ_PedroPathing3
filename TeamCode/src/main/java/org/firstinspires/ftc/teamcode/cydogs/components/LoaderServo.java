@@ -34,6 +34,27 @@ import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseContinuousServo;
  * the class, in the spaces marked for each step. Do the steps in order and save after each one.
  */
 public class LoaderServo extends BaseContinuousServo {
+        private static final String HARDWARE_NAME = "LaunchLoaderServo";
+        private static final DcMotorSimple.Direction DIRECTION = DcMotorSimple.Direction.REVERSE;
+        private static final double RUN_POWER = 0.6;
+        private static final double LOAD_SECONDS = 2.0;
+
+        public LoaderServo(OpMode opMode)
+        {
+            super(opMode, HARDWARE_NAME,DIRECTION, RUN_POWER);
+
+        }
+
+        public void Load()
+        {
+            RunForwardForSecondsAsync(LOAD_SECONDS);
+        }
+
+        public void UnLoaderServo()
+        {
+            RunBackwardForSecondsAsync(LOAD_SECONDS);
+        }
+
 
     // =========================================================================================
     // STEP 1: THE SETTINGS (constants)
