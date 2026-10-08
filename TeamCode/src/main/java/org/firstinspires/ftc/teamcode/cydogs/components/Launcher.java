@@ -61,7 +61,7 @@ public class Launcher extends BaseVelocityMotor {
 
     /** Spins the launcher up to the current launch speed. Returns immediately. */
     public void StartLauncher() {
-        SetVelocity(MAX_TICKS_PER_SECOND * launchPercent);
+        SetVelocity(MAX_TICKS_PER_SECOND * launchVelocityPercent);
     }
 
     /** Stops the launcher and turns the LED off. */
