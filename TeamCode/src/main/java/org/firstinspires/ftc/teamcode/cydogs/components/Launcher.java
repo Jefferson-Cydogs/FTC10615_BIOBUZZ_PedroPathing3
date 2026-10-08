@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseLED;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseVelocityMotor;
 
+import java.util.Date;
+
 /**
  * Launcher - the spinning motor that throws scoring elements, plus a light that tells the
  * drivers when it is ready.
@@ -87,7 +89,7 @@ public class Launcher extends BaseVelocityMotor {
     //      motor can possibly spin, counted in ticks per second. This comes from the motor's
     //      spec sheet: its top speed in revolutions per minute, times the number of ticks in
     //      one revolution, divided by 60.
-    //      >>> MENTOR: write the number for our launcher motor here: ___________
+    //      >>> MENTOR: write the number for our launcher motor here: ___________ 300
     //
     //   f) LAUNCH_PERCENT - a double. How fast we want to launch, as a fraction of the top
     //      speed. 1.0 means the top speed and 0.5 means half of it. Start with 0.5. We will
@@ -99,6 +101,19 @@ public class Launcher extends BaseVelocityMotor {
     //      calculated from other constants, as long as those two were written ABOVE it.
     //
     // (Write your seven constants below this line.)
+
+    private final static String HARDWARE_NAME = "Launcher";
+    private final static String LED_NAME = "LauncherSpeedLED";
+
+    private final static DcMotorSimple.Direction DIRECTION = DcMotorSimple.Direction.FORWARD;
+
+    private final static DcMotor.ZeroPowerBehavior ZERO_POWER_BEHAVIOR = DcMotor.ZeroPowerBehavior.FLOAT;
+
+    private final static double MAX_TICKS_PER_SECOND = 300;
+
+    private final static double LAUNCH_PERCENT = 0.5;
+
+    private final static double LAUNCH_TICKS_PER_SECOND = 300 * 0.5;
 
 
     // =========================================================================================
@@ -116,6 +131,9 @@ public class Launcher extends BaseVelocityMotor {
     // you fill it in the constructor (Step 3) and will show a red underline until you do.
     //
     // (Write your property below this line.)
+
+
+    private BaseLED speedLed;
 
 
     // =========================================================================================
@@ -152,6 +170,10 @@ public class Launcher extends BaseVelocityMotor {
     // all, because it connects to the LED as soon as it is created.)
     //
     // (Write your constructor below this line.)
+    public Launcher(OpMode opMode) {
+        super(opMode, HARDWARE_NAME, DIRECTION, ZERO_POWER_BEHAVIOR);
+        speedLed = new BaseLED(opMode.hardwareMap, LED_NAME);
+    }
 
 
     // =========================================================================================
@@ -181,6 +203,10 @@ public class Launcher extends BaseVelocityMotor {
     // (Write your StartLauncher method below this line.)
 
 
+
+    public void StartLauncher() {
+        SetVelocity(300 * 0.5);
+    }
     // =========================================================================================
     // STEP 5: THE StopLauncher METHOD
     // =========================================================================================
@@ -194,6 +220,10 @@ public class Launcher extends BaseVelocityMotor {
     // (Write your StopLauncher method below this line.)
 
 
+    public void StopLauncher() {
+        SetVelocity(0);
+        speedLed.setOff();
+    }
     // =========================================================================================
     // STEP 6: THE IsLauncherAtSpeed METHOD
     // =========================================================================================
@@ -230,7 +260,18 @@ public class Launcher extends BaseVelocityMotor {
     //
     // (Write your IsLauncherAtSpeed method below this line.)
 
+public boolean IsLauncherAtSpeed() {
 
+    boolean atSpeed = IsAtVelocity();
+    if(atSpeed)
+    {
+       speedLed.setGreen();
+    }
+    else {
+        speedLed.setRed();
+    }
+    return atSpeed;
+    }
     // =========================================================================================
     // CHECK YOUR WORK
     // =========================================================================================
