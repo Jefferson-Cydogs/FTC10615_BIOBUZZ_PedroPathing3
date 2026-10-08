@@ -87,6 +87,13 @@ public class FlowerScoringServo extends BaseServo {
     //
     // (Write your six constants below this line.)
 
+    private final String HARDWARE_NAME = "FlowerScoringServo";
+        private final Servo.Direction DIRECTION = Servo.Direction.FORWARD;
+        private final double MIN_POSITION = 0.0;
+        private final double MAX_POSITION = 1.0;
+        private final double CLOSED_POSITION = 0.5;
+        private final double OPEN_POSITION = 0.8;
+}
 
     // =========================================================================================
     // STEP 2: THE CONSTRUCTOR
@@ -123,6 +130,14 @@ public class FlowerScoringServo extends BaseServo {
     //
     // (Write your constructor below this line.)
 
+public FlowerScoringServo (OpMode opMode)
+{ super(opMode,
+        HARDWARE_NAME,
+        DIRECTION,
+        MIN_POSITION,
+        MAX_POSITION,
+        CLOSED_POSITION);
+}
 
     // =========================================================================================
     // STEP 3: THE Open METHOD
@@ -144,7 +159,11 @@ public class FlowerScoringServo extends BaseServo {
     //
     // (Write your Open method below this line.)
 
+        public void Open(){
+                BaseServo.SetPosition = OPEN_POSITION;
 
+
+        }
     // =========================================================================================
     // STEP 4: THE Close METHOD
     // =========================================================================================
@@ -160,6 +179,11 @@ public class FlowerScoringServo extends BaseServo {
     // (Write your Close method below this line.)
 
 
+public void Close(){
+        BaseServo.SetPosition = CLOSED_POSITION;
+
+
+}
     // =========================================================================================
     // CHECK YOUR WORK
     // =========================================================================================
@@ -182,7 +206,7 @@ public class FlowerScoringServo extends BaseServo {
     //   - The gate never reaches the position you wanted: the number is outside the
     //     MIN_POSITION to MAX_POSITION range, so BaseServo pulled it back to the limit.
     //   - The robot crashes at init: HARDWARE_NAME does not match the Robot Configuration, or
-    //     the OpMode did not call Initialize before using the gate.
+    //     the OpMode did not call Initialize before using the gate.between MIN_POSITION and MAX_POSITION.
     //
     // OPTIONAL CHALLENGE (only after everything above works)
     //   Add a method called IsOpen that tells the OpMode whether the gate is currently open.
@@ -192,4 +216,3 @@ public class FlowerScoringServo extends BaseServo {
     //   back the result of that comparison. (Hint: two numbers are compared for "the same"
     //   with a double equals sign, not a single one.)
 
-}
