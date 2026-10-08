@@ -25,7 +25,7 @@ public class BioBuzzTeleop extends LinearOpMode {
 
 
 
-    private
+
     private ElapsedTime currentTimer;
     private ElapsedTime matchTimer;
     private EventTracker eventTracker;
