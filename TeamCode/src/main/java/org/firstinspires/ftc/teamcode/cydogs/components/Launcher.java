@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseLED;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseVelocityMotor;
 
-import java.util.Date;
+
 
 /**
  * Launcher - the spinning motor that throws scoring elements, plus a light that tells the
@@ -113,7 +113,7 @@ public class Launcher extends BaseVelocityMotor {
 
     private final static double LAUNCH_PERCENT = 0.5;
 
-    private final static double LAUNCH_TICKS_PER_SECOND = 300 * 0.5;
+    private final static double LAUNCH_TICKS_PER_SECOND = MAX_TICKS_PER_SECOND * LAUNCH_PERCENT;
 
 
     // =========================================================================================
@@ -205,7 +205,7 @@ public class Launcher extends BaseVelocityMotor {
 
 
     public void StartLauncher() {
-        SetVelocity(300 * 0.5);
+        SetVelocity(LAUNCH_TICKS_PER_SECOND);
     }
     // =========================================================================================
     // STEP 5: THE StopLauncher METHOD
@@ -221,7 +221,7 @@ public class Launcher extends BaseVelocityMotor {
 
 
     public void StopLauncher() {
-        SetVelocity(0);
+        Stop();
         speedLed.setOff();
     }
     // =========================================================================================
