@@ -5,6 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.cydogs.chassis.BioBuzzRobotChassis;
+import org.firstinspires.ftc.teamcode.cydogs.components.FlowerScoringServo;
+import org.firstinspires.ftc.teamcode.cydogs.components.FlowerSlider;
+import org.firstinspires.ftc.teamcode.cydogs.components.Intake;
+import org.firstinspires.ftc.teamcode.cydogs.components.Launcher;
+import org.firstinspires.ftc.teamcode.cydogs.components.LoaderServo;
 import org.firstinspires.ftc.teamcode.cydogs.core.EventTracker;
 
 
@@ -15,6 +20,12 @@ public class BioBuzzTeleop extends LinearOpMode {
     /** declare variables here */
     private BioBuzzRobotChassis Wheels;
 
+    // WE NEED TO DECLARE OUR NEW DEVICES HERE
+    //   intake, launcher, loaderServo, flowerSlider, flowerScoringServo
+
+
+
+    private
     private ElapsedTime currentTimer;
     private ElapsedTime matchTimer;
     private EventTracker eventTracker;
@@ -26,9 +37,8 @@ public class BioBuzzTeleop extends LinearOpMode {
     public void runOpMode()
     {
         /** Execute initialization actions here */
-        Wheels = new BioBuzzRobotChassis(this);
 
-
+        constructDevices();
         initializeDevices();
         initializePositions();
         currentTimer = new ElapsedTime();
@@ -128,9 +138,22 @@ public class BioBuzzTeleop extends LinearOpMode {
 
     }
 
+    private void constructDevices()
+    {
+        Wheels = new BioBuzzRobotChassis(this);
+
+        // WE NEED TO CONSTRUCT OUR NEW DEVICES HERE
+        //   intake, launcher, loaderServo, flowerSlider, flowerScoringServo
+
+
+    }
     private void initializeDevices()
     {
         Wheels.InitializeChassisTeleop(.6,.3,.5);
+
+        // WE NEED TO INITIALIZE OUR NEW DEVICES HERE
+        //   intake, launcher, loaderServo, flowerSlider, flowerScoringServo
+
 
     }
 
