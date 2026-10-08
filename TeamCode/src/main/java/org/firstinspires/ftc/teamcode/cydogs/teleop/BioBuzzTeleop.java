@@ -22,9 +22,11 @@ public class BioBuzzTeleop extends LinearOpMode {
 
     // WE NEED TO DECLARE OUR NEW DEVICES HERE
     //   intake, launcher, loaderServo, flowerSlider, flowerScoringServo
-
-
-
+private Intake IggyTheIntake;
+private Launcher LarryTheLauncher;
+private LoaderServo LanceTheLoaderServo;
+private FlowerSlider FrankTheFlowerSlider;
+private FlowerScoringServo FinnTheFlowerScoringServo;
 
     private ElapsedTime currentTimer;
     private ElapsedTime matchTimer;
@@ -59,7 +61,7 @@ public class BioBuzzTeleop extends LinearOpMode {
 
             if (eventTracker.doEvent("Telemetry",currentTimer.seconds(),0.5)) {
                 // add code to write out current velocity percent of launcher
-
+                telemetry.addData("launcher velocity:",LarryTheLauncher.GetLaunchVelocityPercent());
                 telemetry.update();
             }
         }
@@ -80,12 +82,12 @@ public class BioBuzzTeleop extends LinearOpMode {
         if(gamepad1.dpadUpWasPressed())
         {
             // increase launcher velocity the built in increment
-
+            LarryTheLauncher.IncreaseLaunchPercent();
         }
         else if(gamepad1.dpadDownWasPressed())
         {
             // decrease launcher velocity by the built in decrement
-
+            LarryTheLauncher.DecreaseLaunchPercent();
         }
     }
 
@@ -95,45 +97,57 @@ public class BioBuzzTeleop extends LinearOpMode {
         if(gamepad2.right_trigger > 0.4)
         {
             // run intake in
+            IggyTheIntake.RunIntake();
         }
         else if(gamepad2.left_trigger > 0.4)
         {
             // run intake reverse
+            IggyTheIntake.ReverseIntake();
         }
         else {
             // stop the intake
+            IggyTheIntake.StopIntake();
         }
 
         if(gamepad2.triangleWasPressed())
         {
             // turn launcher on
+            LarryTheLauncher.StartLauncher();
         }
         else if(gamepad2.crossWasPressed())
         {
             // turn launcher off
+            LarryTheLauncher.StopLauncher();
         }
+
 
         if(gamepad2.rightBumperWasPressed())
         {
             // move scoring element to launcher
+            LanceTheLoaderServo.Load();
         }
 
         if(gamepad2.dpadUpWasPressed())
         {
             // raise flower lift
+            FrankTheFlowerSlider.RaiseToFlower();
         }
         else if(gamepad2.dpadDownWasPressed())
         {
             // lower flower lift AND close flower scoring servo
+            FrankTheFlowerSlider.LowerToHome();
+            FinnTheFlowerScoringServo.Close();
         }
 
         if(gamepad2.squareWasPressed())
         {
             // open flower scoring servo
+            FinnTheFlowerScoringServo.Open();
         }
         else if(gamepad2.circleWasPressed())
         {
             // close flower scoring servo
+            FinnTheFlowerScoringServo.Close();
         }
 
     }
@@ -144,7 +158,11 @@ public class BioBuzzTeleop extends LinearOpMode {
 
         // WE NEED TO CONSTRUCT OUR NEW DEVICES HERE
         //   intake, launcher, loaderServo, flowerSlider, flowerScoringServo
-
+        IggyTheIntake = new Intake(this);
+        LarryTheLauncher = new Launcher(this);
+        LanceTheLoaderServo = new LoaderServo(this);
+        FrankTheFlowerSlider = new FlowerSlider(this);
+        FinnTheFlowerScoringServo = new FlowerScoringServo(this);
 
     }
     private void initializeDevices()
@@ -153,7 +171,11 @@ public class BioBuzzTeleop extends LinearOpMode {
 
         // WE NEED TO INITIALIZE OUR NEW DEVICES HERE
         //   intake, launcher, loaderServo, flowerSlider, flowerScoringServo
-
+        IggyTheIntake.Initialize();
+        LarryTheLauncher.Initialize();
+        LanceTheLoaderServo.Initialize();
+        FrankTheFlowerSlider.Initialize();
+        FinnTheFlowerScoringServo.Initialize();
 
     }
 
