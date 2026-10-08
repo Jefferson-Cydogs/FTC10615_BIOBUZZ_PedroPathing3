@@ -19,6 +19,7 @@ public class BioBuzzTeleop extends LinearOpMode {
     private ElapsedTime matchTimer;
     private EventTracker eventTracker;
 
+
     public String Team = "blue";
 
     @Override
@@ -68,13 +69,13 @@ public class BioBuzzTeleop extends LinearOpMode {
     {
         if(gamepad1.dpadUpWasPressed())
         {
-            // increase launcher power by 0.01
-            // write out to telemetry the new launcher power
+            // increase launcher velocity by adjustLauncherPowerIncrement
+            // write out to telemetry the new launcher velocity
         }
         else if(gamepad1.dpadDownWasPressed())
         {
-            // decrease launcher power by 0.01
-            // write out to telemetry the new launcher power
+            // decrease launcher velocity by adjustLauncherPowerIncrement
+            // write out to telemetry the new launcher velocity
         }
     }
 
@@ -93,11 +94,11 @@ public class BioBuzzTeleop extends LinearOpMode {
             // stop the intake
         }
 
-        if(gamepad2.triangle)
+        if(gamepad2.triangleWasPressed())
         {
             // turn launcher on
         }
-        else if(gamepad2.cross)
+        else if(gamepad2.crossWasPressed())
         {
             // turn launcher ff
         }
@@ -105,6 +106,24 @@ public class BioBuzzTeleop extends LinearOpMode {
         if(gamepad2.right_bumper)
         {
             // run feeder
+        }
+
+        if(gamepad2.dpadUpWasPressed())
+        {
+            // raise flower lift
+        }
+        else if(gamepad2.dpadDownWasPressed())
+        {
+            // lower flower lift AND close flower scoring servo
+        }
+
+        if(gamepad2.squareWasPressed())
+        {
+            // open flower scoring servo
+        }
+        else if(gamepad2.circleWasPressed())
+        {
+            // close flower scoring servo
         }
 
     }
