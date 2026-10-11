@@ -49,7 +49,7 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
     private BaseContinuousServo rightloader;
 
     private BasePowerMotor launcher;
-    private double launcherPower = 0.48;
+    private double launcherPower = 0.465;
 
     private BasePowerMotor intake;
 
