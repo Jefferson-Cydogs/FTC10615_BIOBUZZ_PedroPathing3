@@ -25,6 +25,7 @@ public class MotorConfig extends OpMode {
     private BasePositionalMotor selectedMotor;
     private boolean prevDpadUp, prevDpadDown, prevDpadLeft, prevDpadRight, prevA, prevB, prevX;
     private static final double CURRENT_LIMIT_AMPS = 4.0;   // placeholder: check your motor's spec
+    private String statusMessage = "";
 
     @Override
     public void init() {
@@ -105,7 +106,7 @@ public class MotorConfig extends OpMode {
         }
         if (selectedMotor.IsOverCurrent()) {
             selectedMotor.Stop();
-            telemetry.addLine("OVER CURRENT - motor stopped");
+            statusMessage = "OVER CURRENT - motor stopped";
         }
 
         boolean dpadUpPressed = gamepad1.dpad_up && !prevDpadUp;
@@ -134,6 +135,10 @@ public class MotorConfig extends OpMode {
             selectedMotor.ResetEncoder();
         }
 
+        if (dpadUpPressed || dpadDownPressed || dpadRightPressed || dpadLeftPressed || bPressed) {
+            statusMessage = "";   // any new command clears the old warning
+        }
+
         prevDpadUp = gamepad1.dpad_up;
         prevDpadDown = gamepad1.dpad_down;
         prevDpadRight = gamepad1.dpad_right;
@@ -147,7 +152,12 @@ public class MotorConfig extends OpMode {
         telemetry.addData("Current(A)", "%.2f", selectedMotor.GetCurrent());
         telemetry.addData("Busy", selectedMotor.IsBusy());
         telemetry.addLine("Up/Down=+-100 ticks Left/Right = +- 10 ticks");
-        telemetry.addLine("B=Stop  X=Reset encoder to 0");
+
+        if (!statusMessage.isEmpty()) {
+            telemetry.addLine(statusMessage);
+        }
+
+        telemetry.addLine("B=Hold position  X=Reset encoder to 0");
         telemetry.update();
 
 

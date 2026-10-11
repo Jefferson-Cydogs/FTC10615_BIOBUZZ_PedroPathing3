@@ -141,6 +141,20 @@ public class BasePositionalMotor {
     }
 
     /**
+     * Holds the motor at the position it is at right now. Unlike Stop(), the motor
+     * actively resists being pushed away, using up to the given power.
+     */
+    public void HoldPosition(double power) {
+        checkInitialized();
+        RunToPosition(motor.getCurrentPosition(), power);
+    }
+
+    /** Holds the current position using the increment power (default 0.5). */
+    public void HoldPosition() {
+        HoldPosition(incrementPower);
+    }
+
+    /**
      * Runs to an encoder position at the given power. Target is limited to [min, max].
      */
     public void RunToPosition(int targetPosition, double power) {
