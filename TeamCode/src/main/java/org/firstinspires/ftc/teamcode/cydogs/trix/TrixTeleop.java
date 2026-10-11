@@ -135,13 +135,13 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
         }
         if (gamepad2.right_trigger > .4)
         {
-            intake.SetPower(.7);
+            intake.SetPower(.85);
             rightloader.RunForward();
             leftloader.RunBackward();
         }
         else if (gamepad2.left_trigger > .4)
         {
-            intake.SetPower(-.4);
+            intake.SetPower(-.5);
             rightloader.Stop();
             leftloader.Stop();
         }
@@ -179,10 +179,10 @@ Run feeder	Gamepad 2 Bumper (held)	Yes
 
     private void initializeDevices()
     {
-        leftloader = new BaseContinuousServo(this,"left_intake_servo", DcMotorSimple.Direction.FORWARD,0.8);
+        leftloader = new BaseContinuousServo(this,"left_intake_servo", DcMotorSimple.Direction.FORWARD,0.9);
         leftloader.Initialize();
 
-        rightloader = new BaseContinuousServo(this,"right_intake_servo", DcMotorSimple.Direction.FORWARD, 0.8);
+        rightloader = new BaseContinuousServo(this,"right_intake_servo", DcMotorSimple.Direction.FORWARD, 0.9);
         rightloader.Initialize();
 
         feeder = new BaseContinuousServo(this,"windmillServo", DcMotorSimple.Direction.REVERSE, 0.6);
