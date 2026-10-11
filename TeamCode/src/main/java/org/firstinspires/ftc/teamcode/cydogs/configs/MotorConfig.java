@@ -24,6 +24,7 @@ public class MotorConfig extends OpMode {
     private boolean selectionLocked = false;
     private BasePositionalMotor selectedMotor;
     private boolean prevDpadUp, prevDpadDown, prevDpadLeft, prevDpadRight, prevA, prevB, prevX;
+    private static final double CURRENT_LIMIT_AMPS = 4.0;   // placeholder: check your motor's spec
 
     @Override
     public void init() {
@@ -78,6 +79,7 @@ public class MotorConfig extends OpMode {
                         TEST_MAX);
                 selectedMotor.SetIncrementPower(TEST_POWER);
                 selectedMotor.Initialize();
+                selectedMotor.SetCurrentLimit(CURRENT_LIMIT_AMPS);   // pick a value below the motor's stall current
             }
         }
 
@@ -101,6 +103,11 @@ public class MotorConfig extends OpMode {
             telemetry.update();
             return;
         }
+        if (selectedMotor.IsOverCurrent()) {
+            selectedMotor.Stop();
+            telemetry.addLine("OVER CURRENT - motor stopped");
+        }
+
         boolean dpadUpPressed = gamepad1.dpad_up && !prevDpadUp;
         boolean dpadDownPressed = gamepad1.dpad_down && !prevDpadDown;
         boolean dpadRightPressed = gamepad1.dpad_right && !prevDpadRight;

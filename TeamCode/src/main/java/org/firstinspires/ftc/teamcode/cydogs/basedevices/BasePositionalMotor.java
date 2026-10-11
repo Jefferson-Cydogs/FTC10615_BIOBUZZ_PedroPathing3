@@ -135,6 +135,9 @@ public class BasePositionalMotor {
     public void Stop() {
         checkInitialized();
         motor.setPower(0);
+        // Leave RUN_TO_POSITION so the old target can't be reused. The next
+        // increment will then build on the motor's actual position.
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     /**
