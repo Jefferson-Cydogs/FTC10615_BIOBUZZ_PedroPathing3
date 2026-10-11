@@ -129,7 +129,7 @@ public class MotorConfig extends OpMode {
             selectedMotor.DownSmallIncrement();
         }
         if (bPressed) {
-            selectedMotor.Stop();
+            selectedMotor.HoldPosition();
         }
         if (xPressed) {
             selectedMotor.ResetEncoder();
