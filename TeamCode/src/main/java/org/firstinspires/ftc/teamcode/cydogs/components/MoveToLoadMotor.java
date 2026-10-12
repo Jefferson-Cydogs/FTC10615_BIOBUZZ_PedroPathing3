@@ -4,8 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseContinuousServo;
+import org.firstinspires.ftc.teamcode.cydogs.basedevices.BasePowerMotor;
 
-public class MoveToLoadServo extends BaseContinuousServo {
+public class MoveToLoadMotor extends BasePowerMotor {
     /**
      * runPower is the speed used by RunForward/RunBackward, from 0 to 1 (sign is ignored).
      *
@@ -15,14 +16,14 @@ public class MoveToLoadServo extends BaseContinuousServo {
      * @param runPower
      */
 
-    private static final String hardwareName = "MoveToLoadServo";
+    private static final String hardwareName = "MoveToLoadMotor";
 
     private static final DcMotorSimple.Direction direction = DcMotorSimple.Direction.REVERSE;
 
-    private static double runPower = 0.6;
+    private static double runPower = 0.5;
 
 
-    public MoveToLoadServo(OpMode opMode) {
+    public MoveToLoadMotor(OpMode opMode) {
 
         super(opMode, hardwareName, direction, runPower);
     }
