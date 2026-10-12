@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.cydogs.components;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseContinuousServo;
@@ -25,6 +26,6 @@ public class MoveToLoadMotor extends BasePowerMotor {
 
     public MoveToLoadMotor(OpMode opMode) {
 
-        super(opMode, hardwareName, direction, runPower);
+        super(opMode, hardwareName, direction, DcMotor.ZeroPowerBehavior.FLOAT);
     }
 }
