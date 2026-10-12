@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.cydogs.components;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseContinuousServo;
+import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseServo;
 
 /**
  * LoaderServo - the little servo that pushes a scoring ball into the launcher.
@@ -33,27 +35,32 @@ import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseContinuousServo;
  * YOUR JOB: finish Steps 1, 2 and 3 below. Everything you write goes INSIDE the curly braces of
  * the class, in the spaces marked for each step. Do the steps in order and save after each one.
  */
-public class LoaderServo extends BaseContinuousServo {
+public class LoaderServo extends BaseServo {
         private static final String HARDWARE_NAME = "LaunchLoaderServo";
-        private static final DcMotorSimple.Direction DIRECTION = DcMotorSimple.Direction.REVERSE;
-        private static final double RUN_POWER = 0.6;
-        private static final double LOAD_SECONDS = 2.0;
+        private static final Servo.Direction DIRECTION = Servo.Direction.REVERSE;
+        // Safety limits: BaseServo never lets a position go outside this range.
+        private static final double MIN_POSITION = 0.0;
+        private static final double MAX_POSITION = 1.0;
+
+        // The two gate positions, measured on the robot. Both must be between MIN and MAX.
+        private static final double LOAD_POSITION = 0.5;
+        private static final double LAUNCH_POSITION = 0.8;
 
         public LoaderServo(OpMode opMode)
         {
-            super(opMode, HARDWARE_NAME,DIRECTION, RUN_POWER);
+            super(opMode, HARDWARE_NAME,DIRECTION, MIN_POSITION, MAX_POSITION, .5);
 
         }
 
         public void Load()
         {
-            RunForwardForSecondsAsync(LOAD_SECONDS);
+                this.SetPosition(LOAD_POSITION);
+        }
+        public void Launch()
+        {
+                this.SetPosition(LAUNCH_POSITION);
         }
 
-        public void Unload()
-        {
-            RunBackwardForSecondsAsync(LOAD_SECONDS);
-        }
 
 
     // =========================================================================================
