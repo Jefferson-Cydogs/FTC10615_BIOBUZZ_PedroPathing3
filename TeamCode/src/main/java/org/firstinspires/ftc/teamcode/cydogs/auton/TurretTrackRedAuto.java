@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 @Autonomous(name = "Turret Track RED", group = "cydogs")
 public class TurretTrackRedAuto extends LinearOpMode {
 
-    private static final String SERVO_NAME = "turret_servo";
     private static final String WEBCAM_NAME = "Webcam 1";
 
     // How close to center counts as locked (degrees of bearing)
@@ -38,7 +37,7 @@ public class TurretTrackRedAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
         eyes = new TagSight(hardwareMap, WEBCAM_NAME, "red");
-        turret = new Turret(this, SERVO_NAME);
+        turret = new Turret(this);
         turret.initialize();
 
         telemetry.addLine("Turret Track RED ready");

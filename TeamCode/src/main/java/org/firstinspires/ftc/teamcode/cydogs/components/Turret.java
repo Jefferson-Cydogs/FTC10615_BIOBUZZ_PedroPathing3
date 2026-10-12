@@ -29,14 +29,15 @@ public class Turret extends BaseServo {
     // Last commanded turret angle (degrees)
     private double currentTurretDegrees;
 
+    private static final String TURRET_SERVO_NAME = "TurretTurnerServo";
+
     /**
      * @param opMode       the running OpMode
-     * @param hardwareName name of the servo in the robot configuration
      */
-    public Turret(OpMode opMode, String hardwareName) {
+    public Turret(OpMode opMode) {
         super(
                 opMode,
-                hardwareName,
+                TURRET_SERVO_NAME,
                 Servo.Direction.FORWARD,
                 0.0,   // min servo position
                 1.0,   // max servo position

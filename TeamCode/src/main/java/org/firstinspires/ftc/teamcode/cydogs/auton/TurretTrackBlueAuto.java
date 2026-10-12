@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 @Autonomous(name = "Turret Track BLUE", group = "cydogs")
 public class TurretTrackBlueAuto extends LinearOpMode {
 
-    private static final String SERVO_NAME = "turret_servo";
     private static final String WEBCAM_NAME = "Webcam 1";
 
     private static final double LOCK_TOLERANCE_DEG = 3.0;
@@ -31,7 +30,7 @@ public class TurretTrackBlueAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
         eyes = new TagSight(hardwareMap, WEBCAM_NAME, "blue");
-        turret = new Turret(this, SERVO_NAME);
+        turret = new Turret(this);
         turret.initialize();
 
         telemetry.addLine("Turret Track BLUE ready");
