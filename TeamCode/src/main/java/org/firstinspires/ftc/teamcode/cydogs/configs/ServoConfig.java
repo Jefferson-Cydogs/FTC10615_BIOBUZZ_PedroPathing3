@@ -38,11 +38,12 @@ public class ServoConfig extends OpMode {
             telemetry.addLine("No servos found in the robot configuration!");
         } else {
 
-            telemetry.addLine("Found " + servoNames.size() + "servo(s).");
+            telemetry.addLine("Found " + servoNames.size() + " servo(s).");
 
             telemetry.addLine("Dpad Up/Down to select, A to confirm.");
-            telemetry.update();
+
         }
+        telemetry.update();
     }
 
 
@@ -128,11 +129,11 @@ public class ServoConfig extends OpMode {
 
             }
             if (dpadRightPressed) {
-                selectedServo.DownSmallIncrement();
+                selectedServo.UpSmallIncrement();
 
             }
             if (dpadLeftPressed) {
-                selectedServo.UpSmallIncrement();
+                selectedServo.DownSmallIncrement();
             }
 
             prevDpadUp = gamepad1.dpad_up;

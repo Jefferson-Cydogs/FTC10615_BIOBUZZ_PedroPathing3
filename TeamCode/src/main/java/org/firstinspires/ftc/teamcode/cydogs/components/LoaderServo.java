@@ -50,7 +50,7 @@ public class LoaderServo extends BaseContinuousServo {
             RunForwardForSecondsAsync(LOAD_SECONDS);
         }
 
-        public void UnLoaderServo()
+        public void Unload()
         {
             RunBackwardForSecondsAsync(LOAD_SECONDS);
         }

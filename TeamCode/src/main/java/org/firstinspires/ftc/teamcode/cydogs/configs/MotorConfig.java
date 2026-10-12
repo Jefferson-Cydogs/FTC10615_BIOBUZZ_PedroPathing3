@@ -24,6 +24,8 @@ public class MotorConfig extends OpMode {
     private boolean selectionLocked = false;
     private BasePositionalMotor selectedMotor;
     private boolean prevDpadUp, prevDpadDown, prevDpadLeft, prevDpadRight, prevA, prevB, prevX;
+    private static final double CURRENT_LIMIT_AMPS = 4.0;   // placeholder: check your motor's spec
+    private String statusMessage = "";
 
     @Override
     public void init() {
@@ -78,6 +80,7 @@ public class MotorConfig extends OpMode {
                         TEST_MAX);
                 selectedMotor.SetIncrementPower(TEST_POWER);
                 selectedMotor.Initialize();
+                selectedMotor.SetCurrentLimit(CURRENT_LIMIT_AMPS);   // pick a value below the motor's stall current
             }
         }
 
@@ -101,6 +104,11 @@ public class MotorConfig extends OpMode {
             telemetry.update();
             return;
         }
+        if (selectedMotor.IsOverCurrent()) {
+            selectedMotor.Stop();
+            statusMessage = "OVER CURRENT - motor stopped";
+        }
+
         boolean dpadUpPressed = gamepad1.dpad_up && !prevDpadUp;
         boolean dpadDownPressed = gamepad1.dpad_down && !prevDpadDown;
         boolean dpadRightPressed = gamepad1.dpad_right && !prevDpadRight;
@@ -121,10 +129,14 @@ public class MotorConfig extends OpMode {
             selectedMotor.DownSmallIncrement();
         }
         if (bPressed) {
-            selectedMotor.Stop();
+            selectedMotor.HoldPosition();
         }
         if (xPressed) {
             selectedMotor.ResetEncoder();
+        }
+
+        if (dpadUpPressed || dpadDownPressed || dpadRightPressed || dpadLeftPressed || bPressed) {
+            statusMessage = "";   // any new command clears the old warning
         }
 
         prevDpadUp = gamepad1.dpad_up;
@@ -140,7 +152,12 @@ public class MotorConfig extends OpMode {
         telemetry.addData("Current(A)", "%.2f", selectedMotor.GetCurrent());
         telemetry.addData("Busy", selectedMotor.IsBusy());
         telemetry.addLine("Up/Down=+-100 ticks Left/Right = +- 10 ticks");
-        telemetry.addLine("B=Stop  X=Reset encoder to 0");
+
+        if (!statusMessage.isEmpty()) {
+            telemetry.addLine(statusMessage);
+        }
+
+        telemetry.addLine("B=Hold position  X=Reset encoder to 0");
         telemetry.update();
 
 

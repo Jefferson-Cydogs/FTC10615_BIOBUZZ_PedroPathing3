@@ -135,6 +135,23 @@ public class BasePositionalMotor {
     public void Stop() {
         checkInitialized();
         motor.setPower(0);
+        // Leave RUN_TO_POSITION so the old target can't be reused. The next
+        // increment will then build on the motor's actual position.
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    /**
+     * Holds the motor at the position it is at right now. Unlike Stop(), the motor
+     * actively resists being pushed away, using up to the given power.
+     */
+    public void HoldPosition(double power) {
+        checkInitialized();
+        RunToPosition(motor.getCurrentPosition(), power);
+    }
+
+    /** Holds the current position using the increment power (default 0.5). */
+    public void HoldPosition() {
+        HoldPosition(incrementPower);
     }
 
     /**
