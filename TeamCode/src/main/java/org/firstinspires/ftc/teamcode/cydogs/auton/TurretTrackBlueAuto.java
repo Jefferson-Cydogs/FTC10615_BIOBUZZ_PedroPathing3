@@ -29,7 +29,7 @@ public class TurretTrackBlueAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        eyes = new TagSight(hardwareMap, WEBCAM_NAME, "blue");
+        eyes = new TagSight(hardwareMap, TagSight.Alliance.BLUE);
         turret = new Turret(this);
         turret.initialize();
 
