@@ -7,25 +7,24 @@ import org.firstinspires.ftc.teamcode.cydogs.components.Turret;
 import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 
 /**
- * Autonomous turret tracking for the red alliance.
- * Only uses targets whose name contains "red" and that look upright
- * (up tag, not the upside-down down tag).
- * Camera is mounted on the turret. If no target is found, the turret
- * sweeps across its range. When a target is found, the turret moves
- * until the tag is centered left/right in the camera view.
+ * Bench test: aim the turret at red / upright AprilTags.
+ *
+ * - If a good tag is visible, center it left/right (TRACK).
+ * - If not, sweep the turret between min and max (SEARCH).
+ *
+ * Webcam name is inside TagSight ("Webcam 1").
+ * Servo name is inside Turret ("TurretTurnerServo").
  */
 @Autonomous(name = "Turret Track RED", group = "cydogs")
 public class TurretTrackRedAuto extends LinearOpMode {
 
-    private static final String WEBCAM_NAME = "Webcam 1";
-
     // How close to center counts as locked (degrees of bearing)
     private static final double LOCK_TOLERANCE_DEG = 3.0;
 
-    // How strongly to correct toward the tag
+    // How hard to nudge toward the tag
     private static final double TRACK_GAIN = 0.15;
 
-    // Turret degrees to move each loop while searching
+    // How far to move each loop while searching (turret degrees)
     private static final double SEARCH_STEP_DEG = 1.0;
 
     private TagSight eyes;
@@ -41,7 +40,9 @@ public class TurretTrackRedAuto extends LinearOpMode {
         turret.initialize();
 
         telemetry.addLine("Turret Track RED ready");
-        telemetry.addData("turret max deg", "%.1f", Turret.MAX_TURRET_DEGREES);
+        telemetry.addData("min deg", "%.1f", Turret.MIN_DEGREES);
+        telemetry.addData("straight deg", "%.1f", Turret.STRAIGHT_DEGREES);
+        telemetry.addData("max deg", "%.1f", Turret.MAX_DEGREES);
         telemetry.update();
         waitForStart();
 
@@ -72,13 +73,12 @@ public class TurretTrackRedAuto extends LinearOpMode {
 
     /**
      * Move until the tag is near the horizontal center of the camera.
-     * Does not use up/down aiming.
+     * If it tracks the wrong way, use: -eyes.bearingDegrees * TRACK_GAIN
      */
     private void trackTag() {
         if (Math.abs(eyes.bearingDegrees) <= LOCK_TOLERANCE_DEG) {
             return;
         }
-        // If motion goes the wrong way, use: -eyes.bearingDegrees * TRACK_GAIN
         double nudge = eyes.bearingDegrees * TRACK_GAIN;
         turret.nudgeByDegrees(nudge);
     }
