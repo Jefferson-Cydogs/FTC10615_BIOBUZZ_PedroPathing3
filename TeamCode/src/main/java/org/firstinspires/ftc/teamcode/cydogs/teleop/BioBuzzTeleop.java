@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.cydogs.core.EventTracker;
 
 
 
-@TeleOp(name="New Robot BioBuzz TeleOp", group= "TeleOp")
+@TeleOp(name="Beetoven TeleOp", group= "TeleOp")
 public class BioBuzzTeleop extends LinearOpMode {
 
     /** declare variables here */

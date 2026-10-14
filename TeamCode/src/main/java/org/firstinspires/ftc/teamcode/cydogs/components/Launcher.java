@@ -38,9 +38,13 @@ public class Launcher extends BaseVelocityMotor {
     private static final DcMotor.ZeroPowerBehavior ZERO_POWER_BEHAVIOR =
             DcMotor.ZeroPowerBehavior.FLOAT;
 
+
+    private final double MotorsRPM = 312;
+    private final double MotorsTicksPerRevolution = 537.7;
+
     // The motor's top speed in ticks per second (free-speed RPM x ticks per revolution / 60).
     // NOTE: 300 is a placeholder. Check it against the motor's spec sheet.
-    private static final double MAX_TICKS_PER_SECOND = 300;
+    private final double MAX_TICKS_PER_SECOND = MotorsRPM * MotorsTicksPerRevolution / 60;
 
     // Starting launch speed as a fraction of top speed (0.5 = 50%). Tune on the robot.
     private static final double LAUNCH_PERCENT = 0.5;

@@ -71,7 +71,7 @@ public class BioBuzzRobotChassis {
         FrontLeftWheel.setDirection(DcMotor.Direction.REVERSE);
         //FrontRightWheel.setDirection(DcMotor.Direction.FORWARD); * not needed as FORWARD is default
         //BackLeftWheel.setDirection(DcMotor.Direction.FORWARD); * not needed as FORWARD is default
-        BackRightWheel.setDirection(DcMotor.Direction.REVERSE);
+        BackLeftWheel.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void InitializeChassisTeleop(double highSpeed, double lowSpeed, double rotateSpeed)
