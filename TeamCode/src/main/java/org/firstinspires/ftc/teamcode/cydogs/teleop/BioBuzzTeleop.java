@@ -9,9 +9,13 @@ import org.firstinspires.ftc.teamcode.cydogs.components.FlowerScoringServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.FlowerSlider;
 import org.firstinspires.ftc.teamcode.cydogs.components.Intake;
 import org.firstinspires.ftc.teamcode.cydogs.components.Launcher;
+import org.firstinspires.ftc.teamcode.cydogs.components.LauncherSizeServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.LoaderServo;
+import org.firstinspires.ftc.teamcode.cydogs.components.MoveToLoadMotor;
+import org.firstinspires.ftc.teamcode.cydogs.components.Turret;
 import org.firstinspires.ftc.teamcode.cydogs.core.EventTracker;
-
+import org.firstinspires.ftc.teamcode.cydogs.vision.Aimer;
+import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 
 
 @TeleOp(name="Beetoven TeleOp", group= "TeleOp")
@@ -25,13 +29,16 @@ public class BioBuzzTeleop extends LinearOpMode {
 private Intake IggyTheIntake;
 private Launcher LarryTheLauncher;
 private LoaderServo LanceTheLoaderServo;
+private LauncherSizeServo LauncherSize;
 private FlowerSlider FrankTheFlowerSlider;
 private FlowerScoringServo FinnTheFlowerScoringServo;
+private MoveToLoadMotor middleLoaderWheel;
 
     private ElapsedTime currentTimer;
     private ElapsedTime matchTimer;
     private EventTracker eventTracker;
 
+    private Aimer myTurret;
 
     public String Team = "blue";
 
@@ -89,6 +96,24 @@ private FlowerScoringServo FinnTheFlowerScoringServo;
             // decrease launcher velocity by the built in decrement
             LarryTheLauncher.DecreaseLaunchPercent();
         }
+
+        if(gamepad1.triangleWasPressed())
+        {
+            myTurret.preset(Turret.STRAIGHT_DEGREES);
+        }
+        else if(gamepad1.circleWasPressed())
+        {
+            myTurret.preset(150);
+        }
+        else if(gamepad1.squareWasPressed())
+        {
+            myTurret.preset(210);
+        }
+        else if(gamepad1.crossWasPressed())
+        {
+            myTurret.search();
+        }
+        myTurret.update();
     }
 
     private void manageManipulatorControls()
@@ -121,33 +146,43 @@ private FlowerScoringServo FinnTheFlowerScoringServo;
         }
 
 
-        if(gamepad2.rightBumperWasPressed())
+
+        if(gamepad2.right_bumper)
         {
             // move scoring element to launcher
+            LanceTheLoaderServo.Launch();
+        }
+        else {
             LanceTheLoaderServo.Load();
         }
 
-        if(gamepad2.dpadUpWasPressed())
+        if(gamepad2.dpad_up)
         {
+            middleLoaderWheel.SetPower(-.5);
             // raise flower lift
-            FrankTheFlowerSlider.RaiseToFlower();
+         //   FrankTheFlowerSlider.RaiseToFlower();
         }
-        else if(gamepad2.dpadDownWasPressed())
-        {
+        else if(gamepad2.dpad_down)
+        {middleLoaderWheel.SetPower(.5);
             // lower flower lift AND close flower scoring servo
-            FrankTheFlowerSlider.LowerToHome();
-            FinnTheFlowerScoringServo.Close();
+         //   FrankTheFlowerSlider.LowerToHome();
+         //   FinnTheFlowerScoringServo.Close();
         }
+        else {
+            middleLoaderWheel.SetPower(0);
+        }
+
+
 
         if(gamepad2.squareWasPressed())
         {
             // open flower scoring servo
-            FinnTheFlowerScoringServo.Open();
+         //   FinnTheFlowerScoringServo.Open();
         }
         else if(gamepad2.circleWasPressed())
         {
             // close flower scoring servo
-            FinnTheFlowerScoringServo.Close();
+          //  FinnTheFlowerScoringServo.Close();
         }
 
     }
@@ -161,9 +196,11 @@ private FlowerScoringServo FinnTheFlowerScoringServo;
         IggyTheIntake = new Intake(this);
         LarryTheLauncher = new Launcher(this);
         LanceTheLoaderServo = new LoaderServo(this);
-        FrankTheFlowerSlider = new FlowerSlider(this);
-        FinnTheFlowerScoringServo = new FlowerScoringServo(this);
-
+     //   FrankTheFlowerSlider = new FlowerSlider(this);
+     //   FinnTheFlowerScoringServo = new FlowerScoringServo(this);
+        myTurret = new Aimer(this, TagSight.Alliance.BLUE);
+        LauncherSize = new LauncherSizeServo(this);
+        middleLoaderWheel = new MoveToLoadMotor(this);
     }
     private void initializeDevices()
     {
@@ -174,8 +211,11 @@ private FlowerScoringServo FinnTheFlowerScoringServo;
         IggyTheIntake.Initialize();
         LarryTheLauncher.Initialize();
         LanceTheLoaderServo.Initialize();
-        FrankTheFlowerSlider.Initialize();
-        FinnTheFlowerScoringServo.Initialize();
+        LauncherSize.Initialize();
+        middleLoaderWheel.Initialize();
+
+     //   FrankTheFlowerSlider.Initialize();
+     //   FinnTheFlowerScoringServo.Initialize();
 
     }
 

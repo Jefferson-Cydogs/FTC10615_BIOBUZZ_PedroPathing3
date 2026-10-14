@@ -28,7 +28,7 @@ import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseVelocityMotor;
 public class Launcher extends BaseVelocityMotor {
 
     // Must match the names in the Robot Configuration on the Driver Hub.
-    private static final String HARDWARE_NAME = "Launcher";
+    private static final String HARDWARE_NAME = "LauncherMotor";
     private static final String LED_NAME = "LauncherSpeedLED";
 
     // Use REVERSE if the launcher spins the wrong way.
@@ -101,7 +101,7 @@ public class Launcher extends BaseVelocityMotor {
     /** The current launch speed as a fraction of top speed (0.5 = 50%), for telemetry. */
     public double GetLaunchVelocityPercent() {
         return launchVelocityPercent;
-    }
+    }  // NEED TO GET ACTUAL VELOCITY, NOT TARGET VELOCITY.  CLAUDE HELP
 
     private void adjustLaunchPercent(double change) {
         launchVelocityPercent = Math.max(0.0, Math.min(1.0, launchVelocityPercent + change));

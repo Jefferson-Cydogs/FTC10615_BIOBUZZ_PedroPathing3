@@ -47,6 +47,7 @@ public class Aimer {
     public Aimer(OpMode opMode, TagSight.Alliance alliance) {
         eyes = new TagSight(opMode.hardwareMap, alliance);
         turret = new Turret(opMode);
+        turret.initialize();
     }
 
     /** Do not move the turret. */

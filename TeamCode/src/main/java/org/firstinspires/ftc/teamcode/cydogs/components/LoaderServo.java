@@ -37,7 +37,7 @@ import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseServo;
  */
 public class LoaderServo extends BaseServo {
         private static final String HARDWARE_NAME = "LaunchLoaderServo";
-        private static final Servo.Direction DIRECTION = Servo.Direction.REVERSE;
+        private static final Servo.Direction DIRECTION = Servo.Direction.FORWARD;
         // Safety limits: BaseServo never lets a position go outside this range.
         private static final double MIN_POSITION = 0.0;
         private static final double MAX_POSITION = 1.0;
