@@ -6,88 +6,119 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseServo;
 
 /**
- * Turret control built on BaseServo.
- * Mechanical setup:
- *   The servo drives a small gear that turns a larger turret gear (about 5:1).
- *   Five degrees of servo motion ≈ one degree of turret motion.
- * If the servo can travel about 270 degrees, the turret range is about
- * 270 / 5 = 54 degrees. This class works in turret degrees and converts
- * to a servo position from 0.0 to 1.0.
+ * Turret — aims left/right for shooting / camera.
+ * Robot angles (degrees):
+ *   0°   = intake ("front")
+ *   180° = straight ahead for aiming (servo 0.5)
+ *   We allow about 75° left and 75° right of straight.
+ * Servo positions we allow:
+ *   0.3 = max one way
+ *   0.5 = straight
+ *   0.7 = max the other way
+ * Call initialize() once, then setTurretDegrees() or nudgeByDegrees().
  */
 public class Turret extends BaseServo {
 
-    // Servo degrees moved for each 1 degree of turret motion
-    public static final double GEAR_RATIO = 5.0;
-
-    // Approximate full travel of the servo horn (degrees)
-    public static final double SERVO_TRAVEL_DEGREES = 270.0;
-
-    // Turret angle limits after the gear reduction
-    public static final double MIN_TURRET_DEGREES = 0.0;
-    public static final double MAX_TURRET_DEGREES = SERVO_TRAVEL_DEGREES / GEAR_RATIO;
-
-    // Last commanded turret angle (degrees)
-    private double currentTurretDegrees;
-
     private static final String TURRET_SERVO_NAME = "TurretTurnerServo";
 
+    // ----- Aim angles (degrees on the robot) -----
+
+    /** Straight ahead for aiming (away from intake) */
+    public static final double STRAIGHT_DEGREES = 180.0;
+
+    /** How far left or right of straight we allow (degrees) */
+    public static final double MAX_OFFSET_DEG = 50.0;
+
+    /** Farthest aim one direction */
+    public static final double MIN_DEGREES = STRAIGHT_DEGREES - MAX_OFFSET_DEG; // 105
+
+    /** Farthest aim the other direction */
+    public static final double MAX_DEGREES = STRAIGHT_DEGREES + MAX_OFFSET_DEG; // 255
+
+    // ----- Servo positions (safe range from testing) -----
+
+    private static final double MIN_POSITION = 0.35;
+    private static final double STRAIGHT_POSITION = 0.5;
+    private static final double MAX_POSITION = 0.65;
+
+    /** Last angle we commanded */
+    private double currentDegrees;
+
     /**
-     * @param opMode       the running OpMode
+     * @param opMode the running OpMode
      */
     public Turret(OpMode opMode) {
         super(
                 opMode,
                 TURRET_SERVO_NAME,
                 Servo.Direction.FORWARD,
-                0.0,   // min servo position
-                1.0,   // max servo position
-                0.5    // start in the middle of servo travel
+                MIN_POSITION,
+                MAX_POSITION,
+                STRAIGHT_POSITION
         );
-
-        currentTurretDegrees = MAX_TURRET_DEGREES / 2.0;
-    }
-
-    /** Connect to hardware and move to the starting angle. Call once before use. */
-    public void initialize() {
-        Initialize();
-        setTurretDegrees(currentTurretDegrees);
+        currentDegrees = STRAIGHT_DEGREES;
     }
 
     /**
-     * Aim the turret to an angle in turret degrees (within min/max).
-     * Converts through the gear ratio into a servo position.
+     * Hook up the servo and aim straight.
+     * Call once during OpMode init.
      */
-    public void setTurretDegrees(double turretDegrees) {
-        currentTurretDegrees = clampTurret(turretDegrees);
-
-        // 0.0 = one end of travel, 1.0 = the other end
-        double fraction = currentTurretDegrees / MAX_TURRET_DEGREES;
-        SetPosition(fraction);
+    public void initialize() {
+        Initialize();
+        setTurretDegrees(STRAIGHT_DEGREES);
     }
 
-    /** Change aim by a small amount from the current turret angle. */
-    public void nudgeByDegrees(double deltaTurretDegrees) {
-        setTurretDegrees(currentTurretDegrees + deltaTurretDegrees);
+    /**
+     * Aim to a robot angle in degrees (clamped to the allowed range).
+     * Example: setTurretDegrees(180) aims straight.
+     */
+    public void setTurretDegrees(double degrees) {
+        currentDegrees = clampDegrees(degrees);
+        SetPosition(degreesToPosition(currentDegrees));
+    }
+
+    /**
+     * Change aim by a small amount from where we are now.
+     * Used by Aimer when tracking a tag (bearing nudge).
+     */
+    public void nudgeByDegrees(double deltaDegrees) {
+        setTurretDegrees(currentDegrees + deltaDegrees);
     }
 
     public double getTurretDegrees() {
-        return currentTurretDegrees;
+        return currentDegrees;
     }
 
     public boolean isAtMin() {
-        return currentTurretDegrees <= MIN_TURRET_DEGREES + 0.5;
+        return currentDegrees <= MIN_DEGREES + 0.5;
     }
 
     public boolean isAtMax() {
-        return currentTurretDegrees >= MAX_TURRET_DEGREES - 0.5;
+        return currentDegrees >= MAX_DEGREES + 0.5
+                || currentDegrees >= MAX_DEGREES - 0.5;
     }
 
-    private double clampTurret(double degrees) {
-        if (degrees < MIN_TURRET_DEGREES) {
-            return MIN_TURRET_DEGREES;
+    /**
+     * Map robot degrees → servo position.
+     *
+     *   105° → 0.3
+     *   180° → 0.5
+     *   255° → 0.7
+     *
+     * One straight line through those points (symmetric around center).
+     */
+    private double degreesToPosition(double degrees) {
+        // How far from straight, as a fraction of max offset (-1 .. +1)
+        double t = (degrees - STRAIGHT_DEGREES) / MAX_OFFSET_DEG;
+        return STRAIGHT_POSITION + t * (MAX_POSITION - STRAIGHT_POSITION);
+    }
+
+    private double clampDegrees(double degrees) {
+        if (degrees < MIN_DEGREES) {
+            return MIN_DEGREES;
         }
-        if (degrees > MAX_TURRET_DEGREES) {
-            return MAX_TURRET_DEGREES;
+        if (degrees > MAX_DEGREES) {
+            return MAX_DEGREES;
         }
         return degrees;
     }

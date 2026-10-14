@@ -7,34 +7,42 @@ import org.firstinspires.ftc.teamcode.cydogs.components.Turret;
 import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 
 /**
- * Autonomous turret tracking for the blue alliance.
- * Only uses targets whose name contains "blue" and that look upright
- * (up cell, not the upside-down down cell).
- * Camera is mounted on the turret. If no target is found, the turret
- * sweeps across its range. When a target is found, the turret moves
- * until the tag is centered left/right in the camera view.
+ * Bench test: aim the turret at blue / upright AprilTags.
+ *
+ * - If a good tag is visible, center it left/right (TRACK).
+ * - If not, sweep the turret between min and max (SEARCH).
+ *
+ * Webcam name is inside TagSight ("Webcam 1").
+ * Servo name is inside Turret ("TurretTurnerServo").
  */
 @Autonomous(name = "Turret Track BLUE", group = "cydogs")
 public class TurretTrackBlueAuto extends LinearOpMode {
 
-    private static final String WEBCAM_NAME = "Webcam 1";
-
+    // How close to center counts as locked (degrees of bearing)
     private static final double LOCK_TOLERANCE_DEG = 3.0;
+
+    // How hard to nudge toward the tag
     private static final double TRACK_GAIN = 0.15;
+
+    // How far to move each loop while searching (turret degrees)
     private static final double SEARCH_STEP_DEG = 1.0;
 
     private TagSight eyes;
     private Turret turret;
+
+    // +1 toward max angle, -1 toward min angle
     private double searchDirection = 1.0;
 
     @Override
     public void runOpMode() {
-        eyes = new TagSight(hardwareMap, WEBCAM_NAME, "blue");
+        eyes = new TagSight(hardwareMap, TagSight.Alliance.BLUE);
         turret = new Turret(this);
         turret.initialize();
 
         telemetry.addLine("Turret Track BLUE ready");
-        telemetry.addData("turret max deg", "%.1f", Turret.MAX_TURRET_DEGREES);
+        telemetry.addData("min deg", "%.1f", Turret.MIN_DEGREES);
+        telemetry.addData("straight deg", "%.1f", Turret.STRAIGHT_DEGREES);
+        telemetry.addData("max deg", "%.1f", Turret.MAX_DEGREES);
         telemetry.update();
         waitForStart();
 
@@ -63,6 +71,10 @@ public class TurretTrackBlueAuto extends LinearOpMode {
         eyes.close();
     }
 
+    /**
+     * Move until the tag is near the horizontal center of the camera.
+     * If it tracks the wrong way, use: -eyes.bearingDegrees * TRACK_GAIN
+     */
     private void trackTag() {
         if (Math.abs(eyes.bearingDegrees) <= LOCK_TOLERANCE_DEG) {
             return;
@@ -71,6 +83,7 @@ public class TurretTrackBlueAuto extends LinearOpMode {
         turret.nudgeByDegrees(nudge);
     }
 
+    /** Sweep back and forth until a matching tag is found. */
     private void searchForTag() {
         if (turret.isAtMax()) {
             searchDirection = -1.0;

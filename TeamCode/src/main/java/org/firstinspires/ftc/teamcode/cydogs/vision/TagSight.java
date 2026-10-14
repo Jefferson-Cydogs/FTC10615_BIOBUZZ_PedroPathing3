@@ -12,66 +12,84 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.util.List;
 
 /**
- * Finds AprilTags with the webcam (single tags or BIOBUZZ clusters).
- * Filters (all optional / configurable):
- *   - Color word in the tag name, e.g. "red" or "blue" (case-insensitive)
- *   - Upright orientation using ftcPose.roll so the down side of a hive is ignored
- * Each loop, call update(), then read hasTarget, bearingDegrees, etc.
+ * TagSight = the robot's "eyes" for AprilTags.
+ * What it does:
+ *   - Looks through the webcam for AprilTags
+ *   - Can look for RED tags, BLUE tags, or BOTH
+ *   - Ignores upside-down tags (the down side of a hive)
+ * How to use:
+ *   1. Create once:  new TagSight(hardwareMap, TagSight.Alliance.RED)
+ *   2. Each loop:    eyes.update()
+ *   3. Read results: eyes.hasTarget, eyes.bearingDegrees, etc.
+ * Webcam must be named "Webcam 1" in the robot configuration.
  */
 public class TagSight {
 
-    // |roll| below this (degrees) counts as right-side-up / scorable cell
-    private static final double UPRIGHT_ROLL_LIMIT_DEG = 90.0;
+    // ----- Alliance choices (pick one when you create TagSight) -----
+    public enum Alliance {
+        RED,   // only tags whose name contains "red"
+        BLUE,  // only tags whose name contains "blue"
+        BOTH   // any tag color is OK
+    }
 
+    // Webcam name in the Control Hub config (change here if your name is different)
+    private static final String WEBCAM_NAME = "Webcam 1";
+
+    // If |roll| is less than this, we treat the tag as right-side-up
+    private static final double UPRIGHT_LIMIT = 90.0;
+
+    // Camera tools from the FTC SDK
     private final AprilTagProcessor processor;
     private final VisionPortal portal;
 
-    // If set, the target name must contain this word (example: "red")
-    private final String requiredColorWord;
+    // Which alliance we care about
+    private final Alliance alliance;
 
-    // True when a usable target is in view
+    // ----- Results (read these after update()) -----
+
+    /** True if we found a good tag this frame */
     public boolean hasTarget = false;
 
-    // Left/right angle to the target (degrees). Negative = left, positive = right
+    /** Left/right angle to the tag in degrees (0 = centered). Negative = left, positive = right */
     public double bearingDegrees = 0;
 
-    // Tag id for a single tag; -1 for a cluster
+    /** Tag id number for a single tag; -1 if it was a cluster */
     public int tagId = -1;
 
-    // Name from the SDK (used for color filtering and telemetry)
+    /** Name the SDK gave this tag (useful for telemetry) */
     public String targetName = "";
 
-    // True when the locked target is upright (up cell)
+    /** True if the tag looked upright (not upside-down) */
     public boolean isUpright = false;
 
-    // Roll of the locked target (degrees); useful for debugging
+    /** Roll angle in degrees (for debugging) */
     public double rollDegrees = 0;
 
     /**
-     * @param hardwareMap        from the OpMode
-     * @param webcamName         configuration name (example: "Webcam 1")
-     * @param requiredColorWord  "red", "blue", or null to accept any color
+     * Create the eyes.
+     *
+     * @param hardwareMap  from the OpMode (always available as hardwareMap)
+     * @param alliance     TagSight.Alliance.RED, BLUE, or BOTH
      */
-    public TagSight(HardwareMap hardwareMap, String webcamName, String requiredColorWord) {
-        this.requiredColorWord = requiredColorWord;
+    public TagSight(HardwareMap hardwareMap, Alliance alliance) {
+        this.alliance = alliance;
 
+        // Build the AprilTag detector
         processor = new AprilTagProcessor.Builder().build();
+
+        // Connect detector to the webcam and start the camera
         portal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, webcamName))
+                .setCamera(hardwareMap.get(WebcamName.class, WEBCAM_NAME))
                 .addProcessor(processor)
                 .build();
     }
 
-    /** Accept any alliance color. */
-    public TagSight(HardwareMap hardwareMap, String webcamName) {
-        this(hardwareMap, webcamName, null);
-    }
-
     /**
-     * Refresh detection fields from the latest camera frame.
-     * Call once every loop.
+     * Look at the newest camera frame and update hasTarget, bearingDegrees, etc.
+     * Call this once every loop.
      */
     public void update() {
+        // Clear last frame's results
         hasTarget = false;
         tagId = -1;
         bearingDegrees = 0;
@@ -79,31 +97,39 @@ public class TagSight {
         isUpright = false;
         rollDegrees = 0;
 
+        // Ask the SDK what tags it sees right now
         List<AprilTagDetection> detections = processor.getDetections();
         if (detections == null || detections.isEmpty()) {
-            return;
+            return; // nothing in view
         }
 
+        // Check each detection until we find one we like
         for (AprilTagDetection detection : detections) {
 
-            // ----- Single tag -----
+            // Case 1: a normal single AprilTag
             if (detection instanceof AprilTagSingleDetection) {
                 AprilTagSingleDetection single = (AprilTagSingleDetection) detection;
+
+                // Need pose data to know left/right and roll
                 if (single.ftcPose == null) {
                     continue;
                 }
 
-                String name = (single.metadata != null)
-                        ? single.metadata.name
-                        : ("id " + single.id);
-
-                if (!nameMatchesColor(name)) {
-                    continue;
-                }
-                if (!poseIsUpright(single.ftcPose.roll)) {
-                    continue;
+                // Name from the library, or a fallback
+                String name = "id " + single.id;
+                if (single.metadata != null && single.metadata.name != null) {
+                    name = single.metadata.name;
                 }
 
+                // Skip wrong alliance or upside-down tags
+                if (!matchesAlliance(name)) {
+                    continue;
+                }
+                if (!isUprightRoll(single.ftcPose.roll)) {
+                    continue;
+                }
+
+                // This tag is good — save info and stop looking
                 hasTarget = true;
                 bearingDegrees = single.ftcPose.bearing;
                 rollDegrees = single.ftcPose.roll;
@@ -113,13 +139,15 @@ public class TagSight {
                 return;
             }
 
-            // ----- Cluster (hive cell) -----
+            // Case 2: a BIOBUZZ hive "cluster" (two tags treated as one target)
             if (detection instanceof AprilTagClusterDetection) {
                 AprilTagClusterDetection cluster = (AprilTagClusterDetection) detection;
+
                 if (cluster.ftcPose == null) {
                     continue;
                 }
 
+                // Prefer shortName, then name, then a default
                 String name = "cluster";
                 if (cluster.metadata != null) {
                     if (cluster.metadata.shortName != null && !cluster.metadata.shortName.isEmpty()) {
@@ -129,10 +157,10 @@ public class TagSight {
                     }
                 }
 
-                if (!nameMatchesColor(name)) {
+                if (!matchesAlliance(name)) {
                     continue;
                 }
-                if (!poseIsUpright(cluster.ftcPose.roll)) {
+                if (!isUprightRoll(cluster.ftcPose.roll)) {
                     continue;
                 }
 
@@ -140,7 +168,7 @@ public class TagSight {
                 bearingDegrees = cluster.ftcPose.bearing;
                 rollDegrees = cluster.ftcPose.roll;
                 isUpright = true;
-                tagId = -1;
+                tagId = -1; // clusters don't use a single id here
                 targetName = name;
                 return;
             }
@@ -148,27 +176,41 @@ public class TagSight {
     }
 
     /**
-     * True if no color filter is set, or the name contains the required word
-     * (case-insensitive).
+     * True if this tag name is OK for our alliance setting.
+     * RED  → name must include "red"
+     * BLUE → name must include "blue"
+     * BOTH → always OK
      */
-    private boolean nameMatchesColor(String name) {
-        if (requiredColorWord == null || requiredColorWord.isEmpty()) {
+    private boolean matchesAlliance(String name) {
+        if (alliance == Alliance.BOTH) {
             return true;
         }
         if (name == null) {
             return false;
         }
-        return name.toLowerCase().contains(requiredColorWord.toLowerCase());
+
+        String lower = name.toLowerCase();
+
+        if (alliance == Alliance.RED) {
+            return lower.contains("red");
+        }
+        if (alliance == Alliance.BLUE) {
+            return lower.contains("blue");
+        }
+
+        return true;
     }
 
     /**
-     * True if roll looks right-side-up (up cell), not upside-down (down cell).
-     * BIOBUZZ guidance: |roll| less than 90 degrees ≈ scorable / upright.
+     * True if the tag is right-side-up enough to count as the scorable face.
      */
-    private boolean poseIsUpright(double roll) {
-        return Math.abs(roll) < UPRIGHT_ROLL_LIMIT_DEG;
+    private boolean isUprightRoll(double roll) {
+        return Math.abs(roll) < UPRIGHT_LIMIT;
     }
 
+    /**
+     * Turn the camera pipeline off when the OpMode ends (optional but tidy).
+     */
     public void close() {
         if (portal != null) {
             portal.close();
