@@ -19,7 +19,7 @@ public class MoveToLoadMotor extends BasePowerMotor {
 
     private static final String hardwareName = "MoveToLoadMotor";
 
-    private static final DcMotorSimple.Direction direction = DcMotorSimple.Direction.REVERSE;
+    private static final DcMotorSimple.Direction direction = DcMotorSimple.Direction.FORWARD;
 
     private static double runPower = 0.5;
 
