@@ -38,7 +38,7 @@ public class BioBuzzTeleop extends LinearOpMode {
     private LauncherSizeServo LauncherSize;
     private FlowerSlider FrankTheFlowerSlider;
     private FlowerScoringServo FinnTheFlowerScoringServo;
-    private MoveToMiddleMotor moveToMiddleMotor;
+
     private MoveToLauncherMotor moveToLauncherMotor;
 
     private ElapsedTime currentTimer;
@@ -152,15 +152,6 @@ public class BioBuzzTeleop extends LinearOpMode {
             IggyTheIntake.StopIntake();
         }
 
-        // ----- Move to middle: hold left bumper -----
-        if(gamepad2.left_bumper)
-        {
-            moveToMiddleMotor.SetPower(MOVE_TO_MIDDLE_POWER);
-        }
-        else
-        {
-            moveToMiddleMotor.SetPower(0);
-        }
 
         // ----- Move to launcher: hold right bumper -----
         if(gamepad2.right_bumper)
@@ -200,7 +191,7 @@ public class BioBuzzTeleop extends LinearOpMode {
         // FinnTheFlowerScoringServo = new FlowerScoringServo(this);
         myTurret = new Aimer(this, TagSight.Alliance.BLUE);
         LauncherSize = new LauncherSizeServo(this);
-        moveToMiddleMotor = new MoveToMiddleMotor(this);
+
         moveToLauncherMotor = new MoveToLauncherMotor(this);
     }
 
@@ -212,7 +203,7 @@ public class BioBuzzTeleop extends LinearOpMode {
         LarryTheLauncher.Initialize();
         LanceTheLoaderServo.Initialize();
         LauncherSize.Initialize();
-        moveToMiddleMotor.Initialize();
+
         moveToLauncherMotor.Initialize();
 
         // FrankTheFlowerSlider.Initialize();
