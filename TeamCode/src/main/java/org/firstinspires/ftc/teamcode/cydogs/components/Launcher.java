@@ -100,8 +100,8 @@ public class Launcher extends BaseVelocityMotor {
 
     /** The current launch speed as a fraction of top speed (0.5 = 50%), for telemetry. */
     public double GetLaunchVelocityPercent() {
-        return launchVelocityPercent;
-    }  // NEED TO GET ACTUAL VELOCITY, NOT TARGET VELOCITY.  CLAUDE HELP
+        return GetVelocity() / MAX_TICKS_PER_SECOND;
+    }
 
     private void adjustLaunchPercent(double change) {
         launchVelocityPercent = Math.max(0.0, Math.min(1.0, launchVelocityPercent + change));

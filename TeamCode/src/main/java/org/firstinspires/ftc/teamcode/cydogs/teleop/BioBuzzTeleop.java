@@ -11,7 +11,8 @@ import org.firstinspires.ftc.teamcode.cydogs.components.Intake;
 import org.firstinspires.ftc.teamcode.cydogs.components.Launcher;
 import org.firstinspires.ftc.teamcode.cydogs.components.LauncherSizeServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.LoaderServo;
-import org.firstinspires.ftc.teamcode.cydogs.components.MoveToLoadMotor;
+import org.firstinspires.ftc.teamcode.cydogs.components.MoveToLauncherMotor;
+import org.firstinspires.ftc.teamcode.cydogs.components.MoveToMiddleMotor;
 import org.firstinspires.ftc.teamcode.cydogs.components.Turret;
 import org.firstinspires.ftc.teamcode.cydogs.core.EventTracker;
 import org.firstinspires.ftc.teamcode.cydogs.vision.Aimer;
@@ -32,7 +33,8 @@ private LoaderServo LanceTheLoaderServo;
 private LauncherSizeServo LauncherSize;
 private FlowerSlider FrankTheFlowerSlider;
 private FlowerScoringServo FinnTheFlowerScoringServo;
-private MoveToLoadMotor middleLoaderWheel;
+private MoveToMiddleMotor moveToMiddleMotor;
+private MoveToLauncherMotor moveToLauncherMotor;
 
     private ElapsedTime currentTimer;
     private ElapsedTime matchTimer;
@@ -158,18 +160,18 @@ private MoveToLoadMotor middleLoaderWheel;
 
         if(gamepad2.dpad_up)
         {
-            middleLoaderWheel.SetPower(-.5);
+            moveToMiddleMotor.SetPower(-.5);
             // raise flower lift
          //   FrankTheFlowerSlider.RaiseToFlower();
         }
         else if(gamepad2.dpad_down)
-        {middleLoaderWheel.SetPower(.5);
+        {moveToMiddleMotor.SetPower(.5);
             // lower flower lift AND close flower scoring servo
          //   FrankTheFlowerSlider.LowerToHome();
          //   FinnTheFlowerScoringServo.Close();
         }
         else {
-            middleLoaderWheel.SetPower(0);
+            moveToMiddleMotor.SetPower(0);
         }
 
 
@@ -200,7 +202,7 @@ private MoveToLoadMotor middleLoaderWheel;
      //   FinnTheFlowerScoringServo = new FlowerScoringServo(this);
         myTurret = new Aimer(this, TagSight.Alliance.BLUE);
         LauncherSize = new LauncherSizeServo(this);
-        middleLoaderWheel = new MoveToLoadMotor(this);
+        moveToMiddleMotor = new MoveToMiddleMotor(this);
     }
     private void initializeDevices()
     {
@@ -212,7 +214,7 @@ private MoveToLoadMotor middleLoaderWheel;
         LarryTheLauncher.Initialize();
         LanceTheLoaderServo.Initialize();
         LauncherSize.Initialize();
-        middleLoaderWheel.Initialize();
+        moveToMiddleMotor.Initialize();
 
      //   FrankTheFlowerSlider.Initialize();
      //   FinnTheFlowerScoringServo.Initialize();

@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseServo;
 
         private final static String hardwareName="LauncherSizeServo";
         private final static Servo.Direction direction= Servo.Direction.FORWARD;
-        private final static double min=0.3;
+        private final static double min=0.02;
         private final static double max=0.8;
 
         private final static double NECTAR_SIZE=0.08;
