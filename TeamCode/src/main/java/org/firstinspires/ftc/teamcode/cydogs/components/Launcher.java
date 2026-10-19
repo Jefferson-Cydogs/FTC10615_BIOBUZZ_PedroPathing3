@@ -103,6 +103,11 @@ public class Launcher extends BaseVelocityMotor {
         return GetVelocity() / MAX_TICKS_PER_SECOND;
     }
 
+    /** The TARGET launch speed as a fraction of top speed (what the D-pad adjusts), for telemetry. */
+    public double GetTargetLaunchPercent() {
+        return launchVelocityPercent;
+    }
+
     private void adjustLaunchPercent(double change) {
         launchVelocityPercent = Math.max(0.0, Math.min(1.0, launchVelocityPercent + change));
         if (GetTargetVelocity() != 0) {   // launcher is running, so apply the new speed now
