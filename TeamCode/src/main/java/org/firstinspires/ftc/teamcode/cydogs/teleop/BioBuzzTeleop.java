@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.cydogs.components.Launcher;
 import org.firstinspires.ftc.teamcode.cydogs.components.LauncherSizeServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.LoaderServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.MoveToLauncherMotor;
-import org.firstinspires.ftc.teamcode.cydogs.components.MoveToMiddleMotor;
 import org.firstinspires.ftc.teamcode.cydogs.components.Turret;
 import org.firstinspires.ftc.teamcode.cydogs.core.EventTracker;
 import org.firstinspires.ftc.teamcode.cydogs.vision.Aimer;
@@ -23,7 +22,6 @@ import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 public class BioBuzzTeleop extends LinearOpMode {
 
     // Power used while a loader motor button is held. Flip the sign if a motor runs the wrong way.
-    private static final double MOVE_TO_MIDDLE_POWER = -0.5;   // same direction as the old dpad-up
     private static final double MOVE_TO_LAUNCHER_POWER = 0.5;
 
     // How far a trigger must be pulled to count as "pressed"
@@ -90,21 +88,24 @@ public class BioBuzzTeleop extends LinearOpMode {
      CONTROLS
 
      Gamepad 1 (driver)
-       Sticks            Drive
-       D-pad up / down   Launcher speed + / -
-       Triangle          Turret preset: straight
-       Circle            Turret preset: 150
-       Square            Turret preset: 210
-       Cross (X)         Turret search
+       Left stick             Drive (move)
+       Right stick            Drive (turn)
+       D-pad up / down        Launcher target speed + / - (1% per press)
+       Triangle               Turret preset: straight (180°)
+       Circle                 Turret preset: 150°
+       Square                 Turret preset: 210°
+       Cross (X)              Turret search (sweeps until it sees a tag, then centers on it)
 
      Gamepad 2 (manipulator)
        Right trigger (hold)   Intake in
        Left trigger (hold)    Intake backwards
-       Left bumper (hold)     moveToMiddleMotor
-       Right bumper (hold)    moveToLauncherMotor
+       Right bumper (hold)    moveToLauncherMotor forward
+       Left bumper (hold)     moveToLauncherMotor reverse
        Triangle               Launcher on
        Cross (X)              Launcher off
        Circle (one push)      Loader goes to Launch, then right back to Load
+       D-pad left             Launcher size: Pollen
+       D-pad right            Launcher size: Nectar
     */
     private void manageDriverControls()
     {
@@ -226,5 +227,6 @@ public class BioBuzzTeleop extends LinearOpMode {
     {
         // The loader no longer gets Load() every loop, so start it in the Load position.
         LanceTheLoaderServo.Load();
+        LauncherSize.SetNectar();
     }
 }
