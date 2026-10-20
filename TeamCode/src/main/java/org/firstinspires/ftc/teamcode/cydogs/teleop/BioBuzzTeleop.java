@@ -166,12 +166,7 @@ public class BioBuzzTeleop extends LinearOpMode {
         {
             moveToLauncherMotor.SetPower(MOVE_TO_LAUNCHER_POWER);
         }
-        else
-        {
-            moveToLauncherMotor.SetPower(0);
-        }
-
-        if(gamepad2.left_bumper)
+        else if(gamepad2.left_bumper)
         {
             moveToLauncherMotor.SetPower(-MOVE_TO_LAUNCHER_POWER);
         }
