@@ -47,7 +47,7 @@ public class Launcher extends BaseVelocityMotor {
     private final double MAX_TICKS_PER_SECOND = MotorsRPM * MotorsTicksPerRevolution / 60;
 
     // Starting launch speed as a fraction of top speed (0.5 = 50%). Tune on the robot.
-    private static final double LAUNCH_PERCENT = 0.5;
+    private static final double LAUNCH_PERCENT = 0.7;
 
     // How much one adjustment changes the launch speed (0.01 = 1% of top speed).
     private static final double PERCENT_STEP = 0.01;
