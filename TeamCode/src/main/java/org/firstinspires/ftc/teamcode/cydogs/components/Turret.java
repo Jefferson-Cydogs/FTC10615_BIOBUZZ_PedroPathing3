@@ -94,8 +94,7 @@ public class Turret extends BaseServo {
     }
 
     public boolean isAtMax() {
-        return currentDegrees >= MAX_DEGREES + 0.5
-                || currentDegrees >= MAX_DEGREES - 0.5;
+        return currentDegrees >= MAX_DEGREES - 0.5;
     }
 
     /**

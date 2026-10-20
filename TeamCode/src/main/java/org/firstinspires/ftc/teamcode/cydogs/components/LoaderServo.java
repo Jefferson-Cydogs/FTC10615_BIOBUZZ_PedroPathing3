@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.cydogs.components;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseContinuousServo;
 import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseServo;
 
@@ -43,8 +43,8 @@ public class LoaderServo extends BaseServo {
         private static final double MAX_POSITION = 1.0;
 
         // The two gate positions, measured on the robot. Both must be between MIN and MAX.
-        private static final double LOAD_POSITION = 0.6;
-        private static final double LAUNCH_POSITION = 1.0;
+        private static final double LOAD_POSITION = 0.1;
+        private static final double LAUNCH_POSITION = 0.73;
 
         public LoaderServo(OpMode opMode)
         {
@@ -59,6 +59,38 @@ public class LoaderServo extends BaseServo {
         public void Launch()
         {
                 this.SetPosition(LAUNCH_POSITION);
+        }
+
+        // How long to hold the Launch position before going back to Load (seconds). Tune on the robot.
+        private static final double LAUNCH_HOLD_SECONDS = 0.3;
+
+        private final ElapsedTime launchTimer = new ElapsedTime();
+        private boolean launching = false;
+
+        /** One push: go to Launch now, then Update() returns to Load after LAUNCH_HOLD_SECONDS.
+         *  Ignored if a launch is already in progress. */
+        public void LaunchOnce()
+        {
+                if (launching) {
+                        return;
+                }
+                Launch();
+                launchTimer.reset();
+                launching = true;
+        }
+
+        /** Call every loop. Returns the servo to Load when the hold time is up. */
+        public void Update()
+        {
+                if (launching && launchTimer.seconds() >= LAUNCH_HOLD_SECONDS) {
+                        Load();
+                        launching = false;
+                }
+        }
+
+        public boolean IsLaunching()
+        {
+                return launching;
         }
 
 

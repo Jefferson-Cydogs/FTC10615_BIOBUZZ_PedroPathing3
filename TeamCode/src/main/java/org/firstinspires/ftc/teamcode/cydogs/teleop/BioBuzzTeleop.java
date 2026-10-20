@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.cydogs.components.Intake;
 import org.firstinspires.ftc.teamcode.cydogs.components.Launcher;
 import org.firstinspires.ftc.teamcode.cydogs.components.LauncherSizeServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.LoaderServo;
-import org.firstinspires.ftc.teamcode.cydogs.components.MoveToLoadMotor;
+import org.firstinspires.ftc.teamcode.cydogs.components.MoveToLauncherMotor;
 import org.firstinspires.ftc.teamcode.cydogs.components.Turret;
 import org.firstinspires.ftc.teamcode.cydogs.core.EventTracker;
 import org.firstinspires.ftc.teamcode.cydogs.vision.Aimer;
@@ -21,18 +21,23 @@ import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 @TeleOp(name="Beetoven TeleOp", group= "TeleOp")
 public class BioBuzzTeleop extends LinearOpMode {
 
+    // Power used while a loader motor button is held. Flip the sign if a motor runs the wrong way.
+    private static final double MOVE_TO_LAUNCHER_POWER = 0.5;
+
+    // How far a trigger must be pulled to count as "pressed"
+    private static final double TRIGGER_THRESHOLD = 0.4;
+
     /** declare variables here */
     private BioBuzzRobotChassis Wheels;
 
-    // WE NEED TO DECLARE OUR NEW DEVICES HERE
-    //   intake, launcher, loaderServo, flowerSlider, flowerScoringServo
-private Intake IggyTheIntake;
-private Launcher LarryTheLauncher;
-private LoaderServo LanceTheLoaderServo;
-private LauncherSizeServo LauncherSize;
-private FlowerSlider FrankTheFlowerSlider;
-private FlowerScoringServo FinnTheFlowerScoringServo;
-private MoveToLoadMotor middleLoaderWheel;
+    private Intake IggyTheIntake;
+    private Launcher LarryTheLauncher;
+    private LoaderServo LanceTheLoaderServo;
+    private LauncherSizeServo LauncherSize;
+    private FlowerSlider FrankTheFlowerSlider;
+    private FlowerScoringServo FinnTheFlowerScoringServo;
+
+    private MoveToLauncherMotor moveToLauncherMotor;
 
     private ElapsedTime currentTimer;
     private ElapsedTime matchTimer;
@@ -64,36 +69,52 @@ private MoveToLoadMotor middleLoaderWheel;
             manageDriverControls();
             manageManipulatorControls();
 
+            // Returns the loader servo to Load once a launch has been held long enough
+            LanceTheLoaderServo.Update();
 
+            myTurret.update();
 
             if (eventTracker.doEvent("Telemetry",currentTimer.seconds(),0.5)) {
-                // add code to write out current velocity percent of launcher
-                telemetry.addData("launcher velocity:",LarryTheLauncher.GetLaunchVelocityPercent());
+                telemetry.addData("launcher target %:", LarryTheLauncher.GetTargetLaunchPercent());
+                telemetry.addData("launcher actual %:", LarryTheLauncher.GetLaunchVelocityPercent());
                 telemetry.update();
             }
         }
+
+        myTurret.close();
     }
+
     /*
+     CONTROLS
 
-     Drive	Gamepad 1 sticks	Yes
-     Launcher on	Gamepad 2 Triangle	Yes
-     Launcher off	Gamepad 2 Cross (X)	Yes
-     Intake on	Gamepad 2 Right Trigger	Yes
-     Reverse intake	Gamepad 2 Left Trigger	Yes
-     Run feeder	Gamepad 2 Bumper (held)	Yes
+     Gamepad 1 (driver)
+       Left stick             Drive (move)
+       Right stick            Drive (turn)
+       D-pad up / down        Launcher target speed + / - (1% per press)
+       Triangle               Turret preset: straight (180°)
+       Circle                 Turret preset: 150°
+       Square                 Turret preset: 210°
+       Cross (X)              Turret search (sweeps until it sees a tag, then centers on it)
 
-
-  */
+     Gamepad 2 (manipulator)
+       Right trigger (hold)   Intake in
+       Left trigger (hold)    Intake backwards
+       Right bumper (hold)    moveToLauncherMotor forward
+       Left bumper (hold)     moveToLauncherMotor reverse
+       Triangle               Launcher on
+       Cross (X)              Launcher off
+       Circle (one push)      Loader goes to Launch, then right back to Load
+       D-pad left             Launcher size: Pollen
+       D-pad right            Launcher size: Nectar
+    */
     private void manageDriverControls()
     {
         if(gamepad1.dpadUpWasPressed())
         {
-            // increase launcher velocity the built in increment
             LarryTheLauncher.IncreaseLaunchPercent();
         }
         else if(gamepad1.dpadDownWasPressed())
         {
-            // decrease launcher velocity by the built in decrement
             LarryTheLauncher.DecreaseLaunchPercent();
         }
 
@@ -113,116 +134,99 @@ private MoveToLoadMotor middleLoaderWheel;
         {
             myTurret.search();
         }
-        myTurret.update();
+
     }
 
     private void manageManipulatorControls()
     {
-        //intake
-        if(gamepad2.right_trigger > 0.4)
+        // ----- Intake: hold right trigger = in, hold left trigger = backwards -----
+        if(gamepad2.right_trigger > TRIGGER_THRESHOLD)
         {
-            // run intake in
             IggyTheIntake.RunIntake();
         }
-        else if(gamepad2.left_trigger > 0.4)
+        else if(gamepad2.left_trigger > TRIGGER_THRESHOLD)
         {
-            // run intake reverse
             IggyTheIntake.ReverseIntake();
         }
-        else {
-            // stop the intake
+        else
+        {
             IggyTheIntake.StopIntake();
         }
+        if(gamepad2.dpadLeftWasPressed())
+        {
+            LauncherSize.SetPollen();
+        }
+        else if(gamepad2.dpadRightWasPressed())
+        {
+            LauncherSize.SetNectar();
+        }
 
+
+        // ----- Move to launcher: hold right bumper -----
+        if(gamepad2.right_bumper)
+        {
+            moveToLauncherMotor.SetPower(MOVE_TO_LAUNCHER_POWER);
+        }
+        else if(gamepad2.left_bumper)
+        {
+            moveToLauncherMotor.SetPower(-MOVE_TO_LAUNCHER_POWER);
+        }
+        else
+        {
+            moveToLauncherMotor.SetPower(0);
+        }
+
+        // ----- Launcher: triangle = on, cross = off -----
         if(gamepad2.triangleWasPressed())
         {
-            // turn launcher on
             LarryTheLauncher.StartLauncher();
         }
         else if(gamepad2.crossWasPressed())
         {
-            // turn launcher off
             LarryTheLauncher.StopLauncher();
         }
 
-
-
-        if(gamepad2.right_bumper)
+        // ----- Load to launch: one push of circle = Launch position, then back to Load -----
+        if(gamepad2.circleWasPressed())
         {
-            // move scoring element to launcher
-            LanceTheLoaderServo.Launch();
+            LanceTheLoaderServo.LaunchOnce();
         }
-        else {
-            LanceTheLoaderServo.Load();
-        }
-
-        if(gamepad2.dpad_up)
-        {
-            middleLoaderWheel.SetPower(-.5);
-            // raise flower lift
-         //   FrankTheFlowerSlider.RaiseToFlower();
-        }
-        else if(gamepad2.dpad_down)
-        {middleLoaderWheel.SetPower(.5);
-            // lower flower lift AND close flower scoring servo
-         //   FrankTheFlowerSlider.LowerToHome();
-         //   FinnTheFlowerScoringServo.Close();
-        }
-        else {
-            middleLoaderWheel.SetPower(0);
-        }
-
-
-
-        if(gamepad2.squareWasPressed())
-        {
-            // open flower scoring servo
-         //   FinnTheFlowerScoringServo.Open();
-        }
-        else if(gamepad2.circleWasPressed())
-        {
-            // close flower scoring servo
-          //  FinnTheFlowerScoringServo.Close();
-        }
-
     }
 
     private void constructDevices()
     {
         Wheels = new BioBuzzRobotChassis(this);
 
-        // WE NEED TO CONSTRUCT OUR NEW DEVICES HERE
-        //   intake, launcher, loaderServo, flowerSlider, flowerScoringServo
         IggyTheIntake = new Intake(this);
         LarryTheLauncher = new Launcher(this);
         LanceTheLoaderServo = new LoaderServo(this);
-     //   FrankTheFlowerSlider = new FlowerSlider(this);
-     //   FinnTheFlowerScoringServo = new FlowerScoringServo(this);
+        // FrankTheFlowerSlider = new FlowerSlider(this);
+        // FinnTheFlowerScoringServo = new FlowerScoringServo(this);
         myTurret = new Aimer(this, TagSight.Alliance.BLUE);
         LauncherSize = new LauncherSizeServo(this);
-        middleLoaderWheel = new MoveToLoadMotor(this);
+
+        moveToLauncherMotor = new MoveToLauncherMotor(this);
     }
+
     private void initializeDevices()
     {
         Wheels.InitializeChassisTeleop(.6,.3,.5);
 
-        // WE NEED TO INITIALIZE OUR NEW DEVICES HERE
-        //   intake, launcher, loaderServo, flowerSlider, flowerScoringServo
         IggyTheIntake.Initialize();
         LarryTheLauncher.Initialize();
         LanceTheLoaderServo.Initialize();
         LauncherSize.Initialize();
-        middleLoaderWheel.Initialize();
 
-     //   FrankTheFlowerSlider.Initialize();
-     //   FinnTheFlowerScoringServo.Initialize();
+        moveToLauncherMotor.Initialize();
 
+        // FrankTheFlowerSlider.Initialize();
+        // FinnTheFlowerScoringServo.Initialize();
     }
 
     private void initializePositions()
     {
-
+        // The loader no longer gets Load() every loop, so start it in the Load position.
+        LanceTheLoaderServo.Load();
+        LauncherSize.SetNectar();
     }
-
 }
-
