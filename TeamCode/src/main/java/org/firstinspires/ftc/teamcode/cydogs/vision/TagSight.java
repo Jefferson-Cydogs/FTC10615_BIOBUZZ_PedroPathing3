@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.cydogs.vision;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagClusterDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
@@ -12,116 +15,190 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.util.List;
 
 /**
- * TagSight = the robot's "eyes" for AprilTags.
- * What it does:
- *   - Looks through the webcam for AprilTags
- *   - Can look for RED tags, BLUE tags, or BOTH
- *   - Ignores upside-down tags (the down side of a hive)
+ * TagSight = the robot's "eyes" for BIOBUZZ AprilTags.
+ * Hive cells use a 4-tag CLUSTER under each cell. The SDK only needs ONE
+ * member tag fully visible to report the whole cluster. Pose aims near the
+ * center of the cell opening (not the center of one sticker).
+ * Filters:
+ *   - Alliance color in the cluster/tag NAME (red or blue)
+ *   - Upright face: |roll| < 90 degrees (scorable cell, not the down side)
+ * Camera starts OFF. Call openCamera() for TRACK/SEARCH, stopCamera() for
+ * PRESET/HOLD. Call close() when the OpMode ends.
  * How to use:
- *   1. Create once:  new TagSight(hardwareMap, TagSight.Alliance.RED)
- *   2. Each loop:    eyes.update()
- *   3. Read results: eyes.hasTarget, eyes.bearingDegrees, etc.
- * Webcam must be named "Webcam 1" in the robot configuration.
+ *   1. new TagSight(hardwareMap, TagSight.Alliance.RED)
+ *   2. openCamera() when aiming
+ *   3. eyes.update() each loop
+ *   4. Read hasTarget, bearingDegrees, rangeInches, etc.
+ * Webcam config name must be "Webcam 1".
  */
 public class TagSight {
 
-    // ----- Alliance choices (pick one when you create TagSight) -----
+    /** Which alliance tags/clusters we accept. */
     public enum Alliance {
-        RED,   // only tags whose name contains "red"
-        BLUE,  // only tags whose name contains "blue"
-        BOTH   // any tag color is OK
+        RED,   // name must contain "red"
+        BLUE,  // name must contain "blue"
+        BOTH   // any color
     }
 
-    // Webcam name in the Control Hub config (change here if your name is different)
     private static final String WEBCAM_NAME = "Webcam 1";
 
-    // If |roll| is less than this, we treat the tag as right-side-up
+    // |roll| below this = right-side-up / scorable face
     private static final double UPRIGHT_LIMIT = 90.0;
 
-    // Camera tools from the FTC SDK
     private final AprilTagProcessor processor;
     private final VisionPortal portal;
-
-    // Which alliance we care about
     private final Alliance alliance;
 
-    // ----- Results (read these after update()) -----
+    private boolean cameraOpen = false;
 
-    /** True if we found a good tag this frame */
+    // ----- Results after update() -----
+
+    /** True if we have a valid upright target for our alliance */
     public boolean hasTarget = false;
 
-    /** Left/right angle to the tag in degrees (0 = centered). Negative = left, positive = right */
+    /** Left/right angle to aim (degrees). 0 = centered */
     public double bearingDegrees = 0;
 
-    /** Tag id number for a single tag; -1 if it was a cluster */
-    public int tagId = -1;
+    /** Distance to the target (inches) — useful later for shot power */
+    public double rangeInches = 0;
 
-    /** Name the SDK gave this tag (useful for telemetry) */
-    public String targetName = "";
-
-    /** True if the tag looked upright (not upside-down) */
-    public boolean isUpright = false;
-
-    /** Roll angle in degrees (for debugging) */
+    /** Roll (degrees). Used to decide upright vs upside-down */
     public double rollDegrees = 0;
 
+    /** True when |roll| says upright */
+    public boolean isUpright = false;
+
+    /** Full or short name from the SDK (telemetry) */
+    public String targetName = "";
+
     /**
-     * Create the eyes.
-     *
-     * @param hardwareMap  from the OpMode (always available as hardwareMap)
-     * @param alliance     TagSight.Alliance.RED, BLUE, or BOTH
+     * How much of the 4-tag cluster is visible (25, 50, 75, or 100).
+     * 0 if not a cluster / unknown. Partial is OK — do not require 100.
+     */
+    public int percentClusterFound = 0;
+
+    /** Single-tag id, or -1 for a cluster */
+    public int tagId = -1;
+
+    /**
+     * @param hardwareMap from the OpMode
+     * @param alliance    RED, BLUE, or BOTH
      */
     public TagSight(HardwareMap hardwareMap, Alliance alliance) {
         this.alliance = alliance;
 
-        // Build the AprilTag detector
-        processor = new AprilTagProcessor.Builder().build();
+        // BIOBUZZ library: 4-tag clusters per hive cell
+        processor = new AprilTagProcessor.Builder()
+                .setTagLibrary(AprilTagGameDatabase.getBioBuzzTagLibrary())
+                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                .build();
 
-        // Connect detector to the webcam and start the camera
         portal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, WEBCAM_NAME))
                 .addProcessor(processor)
                 .build();
+
+        // Start with camera OFF to save CPU (Aimer turns it on for track/search)
+        stopCamera();
+    }
+
+    /** Start the webcam + AprilTag pipeline. Call for TRACK or SEARCH. */
+    public void openCamera() {
+        if (portal == null) {
+            return;
+        }
+        if (!cameraOpen) {
+            portal.resumeStreaming();
+            cameraOpen = true;
+        }
+    }
+
+    /** Stop streaming frames. Call for PRESET or HOLD. */
+    public void stopCamera() {
+        if (portal == null) {
+            return;
+        }
+        if (cameraOpen || portal.getCameraState() == VisionPortal.CameraState.STREAMING) {
+            portal.stopStreaming();
+        }
+        cameraOpen = false;
+        clearResults();
+    }
+
+    public boolean isCameraOpen() {
+        return cameraOpen;
     }
 
     /**
-     * Look at the newest camera frame and update hasTarget, bearingDegrees, etc.
-     * Call this once every loop.
+     * Read the latest detections and pick the best valid target.
+     * Safe to call when the camera is off (hasTarget stays false).
      */
     public void update() {
-        // Clear last frame's results
-        hasTarget = false;
-        tagId = -1;
-        bearingDegrees = 0;
-        targetName = "";
-        isUpright = false;
-        rollDegrees = 0;
+        clearResults();
 
-        // Ask the SDK what tags it sees right now
-        List<AprilTagDetection> detections = processor.getDetections();
-        if (detections == null || detections.isEmpty()) {
-            return; // nothing in view
+        if (!cameraOpen) {
+            return;
         }
 
-        // Check each detection until we find one we like
+        List<AprilTagDetection> detections = processor.getDetections();
+        if (detections == null || detections.isEmpty()) {
+            return;
+        }
+
+        // Among all valid targets, keep the one closest to camera center
+        double bestAbsBearing = Double.MAX_VALUE;
+
         for (AprilTagDetection detection : detections) {
 
-            // Case 1: a normal single AprilTag
+            // ----- BIOBUZZ hive: 4-tag cluster (main path) -----
+            if (detection instanceof AprilTagClusterDetection) {
+                AprilTagClusterDetection cluster = (AprilTagClusterDetection) detection;
+                if (cluster.ftcPose == null || cluster.metadata == null) {
+                    continue;
+                }
+
+                // Alliance from FULL name (e.g. "RED SCORING"), not shortName only
+                String fullName = cluster.metadata.name != null ? cluster.metadata.name : "";
+                String displayName = fullName;
+                if (cluster.metadata.shortName != null && !cluster.metadata.shortName.isEmpty()) {
+                    displayName = cluster.metadata.shortName;
+                }
+
+                if (!matchesAlliance(fullName)) {
+                    continue;
+                }
+                if (!isUprightRoll(cluster.ftcPose.roll)) {
+                    continue;
+                }
+
+                // Partial cluster is OK (one visible tag can still give cell pose)
+                double absBearing = Math.abs(cluster.ftcPose.bearing);
+                if (absBearing < bestAbsBearing) {
+                    bestAbsBearing = absBearing;
+                    hasTarget = true;
+                    bearingDegrees = cluster.ftcPose.bearing;
+                    rangeInches = cluster.ftcPose.range;
+                    rollDegrees = cluster.ftcPose.roll;
+                    isUpright = true;
+                    targetName = displayName;
+                    percentClusterFound = cluster.percentClusterFound;
+                    tagId = -1;
+                }
+                continue;
+            }
+
+            // ----- Single tags (practice tags only; hive field tags are clusters) -----
             if (detection instanceof AprilTagSingleDetection) {
                 AprilTagSingleDetection single = (AprilTagSingleDetection) detection;
-
-                // Need pose data to know left/right and roll
                 if (single.ftcPose == null) {
                     continue;
                 }
 
-                // Name from the library, or a fallback
                 String name = "id " + single.id;
                 if (single.metadata != null && single.metadata.name != null) {
                     name = single.metadata.name;
                 }
 
-                // Skip wrong alliance or upside-down tags
                 if (!matchesAlliance(name)) {
                     continue;
                 }
@@ -129,89 +206,58 @@ public class TagSight {
                     continue;
                 }
 
-                // This tag is good — save info and stop looking
-                hasTarget = true;
-                bearingDegrees = single.ftcPose.bearing;
-                rollDegrees = single.ftcPose.roll;
-                isUpright = true;
-                tagId = single.id;
-                targetName = name;
-                return;
-            }
-
-            // Case 2: a BIOBUZZ hive "cluster" (two tags treated as one target)
-            if (detection instanceof AprilTagClusterDetection) {
-                AprilTagClusterDetection cluster = (AprilTagClusterDetection) detection;
-
-                if (cluster.ftcPose == null) {
-                    continue;
+                double absBearing = Math.abs(single.ftcPose.bearing);
+                if (absBearing < bestAbsBearing) {
+                    bestAbsBearing = absBearing;
+                    hasTarget = true;
+                    bearingDegrees = single.ftcPose.bearing;
+                    rangeInches = single.ftcPose.range;
+                    rollDegrees = single.ftcPose.roll;
+                    isUpright = true;
+                    targetName = name;
+                    percentClusterFound = 0;
+                    tagId = single.id;
                 }
-
-                // Prefer shortName, then name, then a default
-                String name = "cluster";
-                if (cluster.metadata != null) {
-                    if (cluster.metadata.shortName != null && !cluster.metadata.shortName.isEmpty()) {
-                        name = cluster.metadata.shortName;
-                    } else if (cluster.metadata.name != null) {
-                        name = cluster.metadata.name;
-                    }
-                }
-
-                if (!matchesAlliance(name)) {
-                    continue;
-                }
-                if (!isUprightRoll(cluster.ftcPose.roll)) {
-                    continue;
-                }
-
-                hasTarget = true;
-                bearingDegrees = cluster.ftcPose.bearing;
-                rollDegrees = cluster.ftcPose.roll;
-                isUpright = true;
-                tagId = -1; // clusters don't use a single id here
-                targetName = name;
-                return;
             }
         }
     }
 
-    /**
-     * True if this tag name is OK for our alliance setting.
-     * RED  → name must include "red"
-     * BLUE → name must include "blue"
-     * BOTH → always OK
-     */
+    private void clearResults() {
+        hasTarget = false;
+        bearingDegrees = 0;
+        rangeInches = 0;
+        rollDegrees = 0;
+        isUpright = false;
+        targetName = "";
+        percentClusterFound = 0;
+        tagId = -1;
+    }
+
+    /** RED/BLUE = name contains that word; BOTH = always true. */
     private boolean matchesAlliance(String name) {
         if (alliance == Alliance.BOTH) {
             return true;
         }
-        if (name == null) {
+        if (name == null || name.isEmpty()) {
             return false;
         }
-
         String lower = name.toLowerCase();
-
         if (alliance == Alliance.RED) {
             return lower.contains("red");
         }
         if (alliance == Alliance.BLUE) {
             return lower.contains("blue");
         }
-
         return true;
     }
 
-    /**
-     * True if the tag is right-side-up enough to count as the scorable face.
-     */
     private boolean isUprightRoll(double roll) {
         return Math.abs(roll) < UPRIGHT_LIMIT;
     }
 
-    /**
-     * Turn the camera pipeline off when the OpMode ends (optional but tidy).
-     */
+    /** Fully release the camera when the OpMode is done. */
     public void close() {
+        stopCamera();
         if (portal != null) {
             portal.close();
         }

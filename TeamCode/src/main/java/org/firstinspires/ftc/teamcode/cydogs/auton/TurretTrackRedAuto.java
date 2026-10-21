@@ -7,11 +7,10 @@ import org.firstinspires.ftc.teamcode.cydogs.components.Turret;
 import org.firstinspires.ftc.teamcode.cydogs.vision.TagSight;
 
 /**
- * Bench test: aim the turret at red / upright AprilTags.
- *
- * - If a good tag is visible, center it left/right (TRACK).
- * - If not, sweep the turret between min and max (SEARCH).
- *
+ * Bench test: aim the turret at red / upright AprilTag clusters.
+ * - Camera is turned on for this whole OpMode (bench test).
+ * - If a good target is visible, center it left/right (TRACK).
+ * - If not, sweep slowly between min and max (SEARCH).
  * Webcam name is inside TagSight ("Webcam 1").
  * Servo name is inside Turret ("TurretTurnerServo").
  */
@@ -25,7 +24,8 @@ public class TurretTrackRedAuto extends LinearOpMode {
     private static final double TRACK_GAIN = 0.15;
 
     // How far to move each loop while searching (turret degrees)
-    private static final double SEARCH_STEP_DEG = 1.0;
+    // Keep small so the sweep is smooth
+    private static final double SEARCH_STEP_DEG = 0.1;
 
     private TagSight eyes;
     private Turret turret;
@@ -36,6 +36,8 @@ public class TurretTrackRedAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
         eyes = new TagSight(hardwareMap, TagSight.Alliance.RED);
+        eyes.openCamera(); // TagSight starts off; bench test needs the camera on
+
         turret = new Turret(this);
         turret.initialize();
 
@@ -55,12 +57,18 @@ public class TurretTrackRedAuto extends LinearOpMode {
                 searchForTag();
             }
 
+            boolean locked = eyes.hasTarget
+                    && Math.abs(eyes.bearingDegrees) <= LOCK_TOLERANCE_DEG;
+
             telemetry.addData("filter", "red + upright");
             telemetry.addData("hasTarget", eyes.hasTarget);
+            telemetry.addData("locked", locked);
             telemetry.addData("target", eyes.targetName);
             telemetry.addData("bearing", "%.1f", eyes.bearingDegrees);
+            telemetry.addData("range in", "%.1f", eyes.rangeInches);
             telemetry.addData("roll", "%.1f", eyes.rollDegrees);
             telemetry.addData("upright", eyes.isUpright);
+            telemetry.addData("% cluster", eyes.percentClusterFound);
             telemetry.addData("turret deg", "%.1f", turret.getTurretDegrees());
             telemetry.addData("mode", eyes.hasTarget ? "TRACK" : "SEARCH");
             telemetry.update();
