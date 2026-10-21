@@ -71,7 +71,7 @@ public class BioBuzzTeleop extends LinearOpMode {
 
             // Returns the loader servo to Load once a launch has been held long enough
             LanceTheLoaderServo.Update();
-
+            LarryTheLauncher.Update();
             myTurret.update();
 
             if (eventTracker.doEvent("Telemetry",currentTimer.seconds(),0.5)) {
@@ -227,6 +227,6 @@ public class BioBuzzTeleop extends LinearOpMode {
     {
         // The loader no longer gets Load() every loop, so start it in the Load position.
         LanceTheLoaderServo.Load();
-        LauncherSize.SetNectar();
+        LauncherSize.SetPollen();
     }
 }

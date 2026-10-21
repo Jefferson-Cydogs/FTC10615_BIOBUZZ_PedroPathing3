@@ -43,8 +43,8 @@ public class LoaderServo extends BaseServo {
         private static final double MAX_POSITION = 1.0;
 
         // The two gate positions, measured on the robot. Both must be between MIN and MAX.
-        private static final double LOAD_POSITION = 0.1;
-        private static final double LAUNCH_POSITION = 0.73;
+        private static final double LOAD_POSITION = 0.26;
+        private static final double LAUNCH_POSITION = 0.68;
 
         public LoaderServo(OpMode opMode)
         {
@@ -62,7 +62,7 @@ public class LoaderServo extends BaseServo {
         }
 
         // How long to hold the Launch position before going back to Load (seconds). Tune on the robot.
-        private static final double LAUNCH_HOLD_SECONDS = 0.3;
+        private static final double LAUNCH_HOLD_SECONDS = 0.8;
 
         private final ElapsedTime launchTimer = new ElapsedTime();
         private boolean launching = false;
