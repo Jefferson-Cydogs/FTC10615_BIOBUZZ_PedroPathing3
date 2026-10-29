@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.cydogs.chassis.BioBuzzRobotChassis;
+import org.firstinspires.ftc.teamcode.cydogs.components.FlowerRampServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.FlowerScoringServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.FlowerSlider;
 import org.firstinspires.ftc.teamcode.cydogs.components.Intake;
@@ -33,6 +34,9 @@ private LauncherSizeServo LauncherSize;
 private FlowerSlider FrankTheFlowerSlider;
 private FlowerScoringServo FinnTheFlowerScoringServo;
 private MoveToLoadMotor middleLoaderWheel;
+
+private FlowerRampServo flowerRamp;
+
 
     private ElapsedTime currentTimer;
     private ElapsedTime matchTimer;
@@ -146,6 +150,15 @@ private MoveToLoadMotor middleLoaderWheel;
         }
 
 
+        if(gamepad2.dpadUpWasPressed())
+        {
+            flowerRamp.MoveUp();
+        }
+        if(gamepad2.dpadDownWasPressed())
+        {
+            flowerRamp.MoveDown();
+        }
+
 
         if(gamepad2.right_bumper)
         {
@@ -201,6 +214,7 @@ private MoveToLoadMotor middleLoaderWheel;
         myTurret = new Aimer(this, TagSight.Alliance.BLUE);
         LauncherSize = new LauncherSizeServo(this);
         middleLoaderWheel = new MoveToLoadMotor(this);
+        flowerRamp = new FlowerRampServo(this);
     }
     private void initializeDevices()
     {
@@ -213,6 +227,7 @@ private MoveToLoadMotor middleLoaderWheel;
         LanceTheLoaderServo.Initialize();
         LauncherSize.Initialize();
         middleLoaderWheel.Initialize();
+        flowerRamp.Initialize();
 
      //   FrankTheFlowerSlider.Initialize();
      //   FinnTheFlowerScoringServo.Initialize();
