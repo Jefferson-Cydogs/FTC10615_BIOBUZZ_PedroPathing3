@@ -232,7 +232,7 @@ public class BioBuzzTeleop extends LinearOpMode {
         LauncherSize.Initialize();
 
         moveToLauncherMotor.Initialize();
-        flowerRampServo.Initialize();
+        flowerRamp.Initialize();
 
         // FrankTheFlowerSlider.Initialize();
         // FinnTheFlowerScoringServo.Initialize();
