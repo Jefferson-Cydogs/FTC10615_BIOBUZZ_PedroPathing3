@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.cydogs.chassis.BioBuzzRobotChassis;
+import org.firstinspires.ftc.teamcode.cydogs.components.FlowerRampServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.FlowerScoringServo;
 import org.firstinspires.ftc.teamcode.cydogs.components.FlowerSlider;
 import org.firstinspires.ftc.teamcode.cydogs.components.Intake;
@@ -38,6 +39,9 @@ public class BioBuzzTeleop extends LinearOpMode {
     private FlowerScoringServo FinnTheFlowerScoringServo;
 
     private MoveToLauncherMotor moveToLauncherMotor;
+
+
+    private FlowerRampServo flowerRamp;
 
     private ElapsedTime currentTimer;
     private ElapsedTime matchTimer;
@@ -161,6 +165,15 @@ public class BioBuzzTeleop extends LinearOpMode {
             LauncherSize.SetNectar();
         }
 
+        if(gamepad2.dpadUpWasPressed())
+        {
+            flowerRamp.MoveUp();
+        }
+        if(gamepad2.dpadDownWasPressed())
+        {
+            flowerRamp.MoveDown();
+        }
+
 
         // ----- Move to launcher: hold right bumper -----
         if(gamepad2.right_bumper)
@@ -206,6 +219,7 @@ public class BioBuzzTeleop extends LinearOpMode {
         LauncherSize = new LauncherSizeServo(this);
 
         moveToLauncherMotor = new MoveToLauncherMotor(this);
+        flowerRamp = new FlowerRampServo(this);
     }
 
     private void initializeDevices()
@@ -218,6 +232,7 @@ public class BioBuzzTeleop extends LinearOpMode {
         LauncherSize.Initialize();
 
         moveToLauncherMotor.Initialize();
+        flowerRampServo.Initialize();
 
         // FrankTheFlowerSlider.Initialize();
         // FinnTheFlowerScoringServo.Initialize();
