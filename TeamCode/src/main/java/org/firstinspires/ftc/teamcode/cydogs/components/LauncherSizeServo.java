@@ -9,11 +9,11 @@ import org.firstinspires.ftc.teamcode.cydogs.basedevices.BaseServo;
 
         private final static String hardwareName="LauncherSizeServo";
         private final static Servo.Direction direction= Servo.Direction.FORWARD;
-        private final static double min=0.3;
+        private final static double min=0.02;
         private final static double max=0.8;
 
         private final static double NECTAR_SIZE=0.08;
-        private final static double POLLEN_SIZE=0.6;
+        private final static double POLLEN_SIZE=0.86;
         private final static double startingPosition=0.7;
 
         public LauncherSizeServo(OpMode opMode) {

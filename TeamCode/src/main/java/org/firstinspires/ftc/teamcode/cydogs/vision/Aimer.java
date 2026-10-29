@@ -10,7 +10,10 @@ import org.firstinspires.ftc.teamcode.cydogs.components.Turret;
  *   HOLD   — do not move the turret
  *   PRESET — look at a saved angle (degrees)
  *   TRACK  — if we see a good tag, center on it; if not, hold still
- *   SEARCH — sweep back and forth until a tag is found (use sparingly in auto)
+ *   SEARCH — sweep until a tag is found, then center
+ * powerSave (default false):
+ *   false — camera stays on (good for Init camera stream / simpler testing)
+ *   true  — camera on only for TRACK/SEARCH; off for HOLD/PRESET
  * Call update() once every loop.
  * Use isLocked() before shooting.
  * Hardware names live inside TagSight and Turret (Webcam 1, turret).
@@ -31,7 +34,7 @@ public class Aimer {
     private static final double TRACK_GAIN = 0.15;
 
     // How far to move each loop while searching (turret degrees)
-    private static final double SEARCH_STEP_DEG = 1.0;
+    private static final double SEARCH_STEP_DEG = 0.1;
 
     private final TagSight eyes;
     private final Turret turret;
@@ -41,6 +44,12 @@ public class Aimer {
     private double searchDirection = 1.0;
 
     /**
+     * When true, camera is on only during TRACK/SEARCH.
+     * When false (default), camera stays on so Init/stream and aiming are simple.
+     */
+    private boolean powerSave = false;
+
+    /**
      * @param opMode    the running OpMode (needed for Turret)
      * @param alliance  RED, BLUE, or BOTH — passed through to TagSight
      */
@@ -48,11 +57,29 @@ public class Aimer {
         eyes = new TagSight(opMode.hardwareMap, alliance);
         turret = new Turret(opMode);
         turret.initialize();
+
+        // Default: camera on (powerSave is false)
+        applyCameraForMode();
+    }
+
+    /**
+     * Turn power saving on or off.
+     * true  = camera only for TRACK/SEARCH
+     * false = camera stays on
+     */
+    public void setPowerSave(boolean enabled) {
+        powerSave = enabled;
+        applyCameraForMode();
+    }
+
+    public boolean isPowerSave() {
+        return powerSave;
     }
 
     /** Do not move the turret. */
     public void hold() {
         mode = Mode.HOLD;
+        applyCameraForMode();
     }
 
     /**
@@ -62,6 +89,7 @@ public class Aimer {
     public void preset(double turretDegrees) {
         presetDegrees = turretDegrees;
         mode = Mode.PRESET;
+        applyCameraForMode();
         turret.setTurretDegrees(presetDegrees);
     }
 
@@ -71,18 +99,39 @@ public class Aimer {
      */
     public void track() {
         mode = Mode.TRACK;
+        applyCameraForMode();
     }
 
     /**
-     * Sweep until a tag appears, then you can switch to track().
+     * Sweep until a tag appears, then center on it (still SEARCH mode).
+     * If the tag is lost, sweeping resumes.
      * Prefer preset + track in auto so you do not waste time scanning.
      */
     public void search() {
         mode = Mode.SEARCH;
+        applyCameraForMode();
     }
 
     public Mode getMode() {
         return mode;
+    }
+
+    /**
+     * Camera policy:
+     *   powerSave false → always open
+     *   powerSave true  → open only for TRACK and SEARCH
+     */
+    private void applyCameraForMode() {
+        if (!powerSave) {
+            eyes.openCamera();
+            return;
+        }
+
+        if (mode == Mode.TRACK || mode == Mode.SEARCH) {
+            eyes.openCamera();
+        } else {
+            eyes.stopCamera();
+        }
     }
 
     /**
@@ -98,7 +147,6 @@ public class Aimer {
                 break;
 
             case PRESET:
-                // keep (or re-apply) the saved angle
                 turret.setTurretDegrees(presetDegrees);
                 break;
 
@@ -110,12 +158,10 @@ public class Aimer {
                         turret.nudgeByDegrees(eyes.bearingDegrees * TRACK_GAIN);
                     }
                 }
-                // no target → hold current angle (no search)
                 break;
 
             case SEARCH:
                 if (eyes.hasTarget) {
-                    // found something; fine-center like track
                     if (Math.abs(eyes.bearingDegrees) > LOCK_TOL_DEG) {
                         turret.nudgeByDegrees(eyes.bearingDegrees * TRACK_GAIN);
                     }
@@ -138,17 +184,15 @@ public class Aimer {
         return eyes.hasTarget && Math.abs(eyes.bearingDegrees) <= LOCK_TOL_DEG;
     }
 
-    /** For telemetry or advanced use. */
     public TagSight getEyes() {
         return eyes;
     }
 
-    /** For telemetry or advanced use. */
     public Turret getTurret() {
         return turret;
     }
 
-    /** Call when the OpMode ends if you want to shut the camera down. */
+    /** Call when the OpMode ends to shut the camera down fully. */
     public void close() {
         eyes.close();
     }

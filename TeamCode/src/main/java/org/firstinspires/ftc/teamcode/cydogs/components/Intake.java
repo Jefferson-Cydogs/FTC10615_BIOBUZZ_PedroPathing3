@@ -98,7 +98,7 @@ public class Intake {
     private final String LEFT_SERVO_NAME= "LeftIntakeServo";
     private final String RIGHT_SERVO_NAME= "RightIntakeServo";
     private final String MOTOR_NAME= "IntakeMotor";
-    private final DcMotorSimple.Direction LEFT_SERVO_DIRECTION = DcMotorSimple.Direction.REVERSE;
+    private final DcMotorSimple.Direction LEFT_SERVO_DIRECTION = DcMotorSimple.Direction.FORWARD;
     private final DcMotorSimple.Direction RIGHT_SERVO_DIRECTION = DcMotorSimple.Direction.FORWARD;
     private final DcMotorSimple.Direction MOTOR_DIRECTION = DcMotorSimple.Direction.FORWARD;
     private final DcMotor.ZeroPowerBehavior MOTOR_ZERO_POWER_BEHAVIOR = DcMotor.ZeroPowerBehavior.FLOAT;
